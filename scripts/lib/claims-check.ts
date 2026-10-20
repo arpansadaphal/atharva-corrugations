@@ -68,6 +68,16 @@ export function readsRegistryDirectly(file: string, source: string): boolean {
   )
 }
 
+/**
+ * Client components must not evaluate the gate: LAUNCH is not exposed to the
+ * browser, so the client would disagree with the server. Resolve claims in a
+ * server component and pass plain values down.
+ */
+export function clientReadsGate(source: string): boolean {
+  const isClient = /^\s*['"]use client['"]/.test(source)
+  return isClient && /from\s+['"]@\/(lib\/claims|data\/claims|group\/group)['"]/.test(source)
+}
+
 export function isKnownClaim(id: string): boolean {
   return id in claims || id in group
 }

@@ -11,6 +11,7 @@ The corporate site for Atharva Corrugations Pvt. Ltd. Planning documents are in 
 | `npm run build:launch` | Production build: claims gate blocks first, then only confirmed claims render |
 | `npm run check` | Typecheck, lint, unit tests, contrast, banned strings, claims report |
 | `npm run check:claims:launch` | The claims gate in blocking (production) mode |
+| `npm run test:e2e` | Playwright + axe against a running build (run `npm run build` first; uses the installed Chrome locally) |
 
 Node 24 or later.
 

@@ -6,6 +6,7 @@
  * - a confirmed claim lacks evidence or verifiedOn, or has expired
  * - source references an unknown claim ID
  * - a file outside the gate reads the registry object directly
+ * - a client component imports the gate (it cannot see LAUNCH)
  * - a minimum-count group (hero strip ≥ 3) is under its minimum (production)
  * - a placeholder string is present in src/
  *
@@ -17,6 +18,7 @@ import {
   checkGroups,
   checkRegistry,
   findClaimRefs,
+  clientReadsGate,
   isKnownClaim,
   readsRegistryDirectly,
   summary,
@@ -50,6 +52,9 @@ for (const path of walk(join(ROOT, 'src')).filter((p) => /\.(ts|tsx)$/.test(p)))
   }
   if (readsRegistryDirectly(file, source)) {
     problems.push({ level: 'error', message: `${file}: reads the claims registry directly; use <Gated> or gatedValue()` })
+  }
+  if (clientReadsGate(source)) {
+    problems.push({ level: 'error', message: `${file}: client component imports the claims gate; resolve on the server` })
   }
   for (const marker of ['⚠', 'AWAITING', 'lorem', 'TODO']) {
     if (source.includes(marker)) problems.push({ level: 'error', message: `${file}: placeholder "${marker}"` })

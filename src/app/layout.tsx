@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Link from 'next/link'
+import { FloatingWhatsApp } from '@/components/layout/FloatingWhatsApp'
+import { Footer } from '@/components/layout/Footer'
+import { Navbar } from '@/components/layout/Navbar'
 import { PreviewBanner } from '@/components/layout/PreviewBanner'
 import { Gated } from '@/components/ui/Gated'
 import { group } from '@/group/group'
-import { getClaimsMode } from '@/lib/claims'
+import { gatedValue, getClaimsMode } from '@/lib/claims'
 import './globals.css'
 
 // Weights 300–600 only; 200 is dropped (D-08)
@@ -30,6 +32,9 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
+  // Resolved here, on the server: client components cannot evaluate the claims gate
+  const whatsappNumber = gatedValue('F-12')?.whatsapp
+
   return (
     <html lang="en-IN" className={inter.variable}>
       <body className="flex min-h-dvh flex-col">
@@ -42,26 +47,19 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
 
         <PreviewBanner />
 
-        {/* Shell placeholder: the navbar arrives in M2 (Sitemap §3) */}
-        <header className="border-b border-line bg-paper">
-          <div className="container-site flex h-[72px] items-center">
-            <Link href="/" className="flex flex-col">
-              <span className="text-ui font-semibold text-ink">Atharva Corrugations</span>
-              <Gated claim="F-07">
-                <span className="text-label text-muted">An {group['G-name'].value} company</span>
-              </Gated>
-            </Link>
-          </div>
-        </header>
+        <Navbar groupName={gatedValue('F-07') ? group['G-name'].value : undefined} whatsappNumber={whatsappNumber} />
 
         <main id="main" className="flex-1">
           {children}
         </main>
 
-        {/* Shell placeholder: the four-column footer arrives in M2. Flat ink, no texture (P-04) */}
-        <footer className="bg-ink text-on-dark-body">
-          <div className="container-site py-8 text-spec">Atharva Corrugations</div>
-        </footer>
+        <Footer />
+
+        {whatsappNumber && (
+          <Gated claim="F-58">
+            <FloatingWhatsApp number={whatsappNumber} />
+          </Gated>
+        )}
       </body>
     </html>
   )

@@ -141,6 +141,14 @@ export const claims = {
     note: 'Working days, for quote, product, technical and sample enquiries',
   }),
 
+  'F-58': claim({
+    id: 'F-58',
+    title: 'Floating WhatsApp button',
+    value: true,
+    label: 'VERIFY',
+    note: 'Proposed for consistency with Group sites; client to confirm (Q-29)',
+  }),
+
   // ── C. Board specification ─────────────────────────────────────────────
   'F-20': claim({
     id: 'F-20',
