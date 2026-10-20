@@ -2,8 +2,9 @@ import Link from 'next/link'
 import { DielinePlate } from '@/components/illustration/DielinePlate'
 import { Gated } from '@/components/ui/Gated'
 import { SectionHeader } from '@/components/ui/SectionHeader'
-import { families, familyHref, type Family } from '@/data/products'
+import { families, type Family } from '@/data/products'
 import { getClaimsMode } from '@/lib/claims'
+import { familyHref } from '@/lib/mcb'
 
 /**
  * "What we make" (Sitemap §6.1 H2, Design §8 FamilyIndexRow): a
@@ -32,7 +33,7 @@ function FamilyIndexRow({ family: f }: { family: Family }) {
   const details = (
     <>
       <p className="text-copy">{f.summary}</p>
-      <p className="text-spec text-muted">{f.formats.join(', ')}</p>
+      <p className="text-spec text-muted">{f.formats.map((x) => x.name).join(', ')}</p>
     </>
   )
 
@@ -49,13 +50,9 @@ function FamilyIndexRow({ family: f }: { family: Family }) {
               {f.name}
             </Link>
           </h3>
-          {f.summaryClaim ? (
-            <Gated claim={f.summaryClaim} as="div">
-              {details}
-            </Gated>
-          ) : (
-            details
-          )}
+          <Gated claim={f.formatsClaim} as="div">
+            {details}
+          </Gated>
           {f.slug === 'corrugated-boxes' && (
             <Gated claim="F-27">
               <p className="tabular text-spec font-medium text-ink">3 and 5 ply</p>

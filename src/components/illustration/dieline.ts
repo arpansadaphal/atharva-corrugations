@@ -1,22 +1,28 @@
 /**
- * Parametric dieline for a regular slotted container (Design §7.4 items 1–2,
- * the hero plate, family drawings). One function, so the hero, family pages
- * and the quote diagram can never disagree. Units are millimetres; the SVG
- * scales them.
+ * Parametric dielines for slotted containers (Design §7.4 items 1–2: the hero
+ * plate, family drawings). One function, so every drawing of the same box
+ * agrees. Units are millimetres; the SVG scales them.
  *
- * Flat layout, left to right: glue flap, then panels L, W, L, W. Flaps above
- * and below each panel are W/2 deep, so the major flaps meet in the middle.
- * Solid paths are cuts (outline and slots); dashed paths are creases.
+ * Flat layout, left to right: glue flap, then panels L, W, L, W. Each panel
+ * has a flap above and below:
+ * - RSC (regular slotted container): every flap W/2 deep, so the outer
+ *   flaps meet in the middle.
+ * - FOL (full overlap): the outer flaps (on the L panels) are W deep and
+ *   overlap completely; the inner flaps stay W/2.
+ * Solid paths are cuts (flaps, glue flap, end edge); dashed paths are creases.
  *
  * Simplifications to confirm with the client reviewer (SD-10): slots are
  * drawn as single cut lines (zero width), board thickness allowances are
  * ignored, and the glue flap is tapered by a fixed amount.
  */
 
-export interface RscInput {
+export type SlottedStyle = 'rsc' | 'fol'
+
+export interface SlottedInput {
   length: number
   width: number
   height: number
+  style?: SlottedStyle
   /** Glue (manufacturer's joint) flap width */
   glueFlap?: number
   /** How far the glue flap tapers in at each end */
@@ -27,34 +33,47 @@ export interface Dieline {
   /** Overall flat size */
   width: number
   height: number
-  /** Cut lines: the outline then each slot */
   cuts: string[]
-  /** Crease lines: horizontal flap folds, then vertical panel folds */
   creases: string[]
-  /** Key x and y positions, for placing dimension callouts */
+  /** Panel edges: glue flap start, then the five panel boundaries */
   x: number[]
+  /** Top of the tallest flap, top crease, bottom crease, bottom of the tallest flap */
   y: number[]
 }
 
 const r = (n: number) => Math.round(n * 10) / 10
 
-export function rscDieline({ length: L, width: W, height: H, glueFlap = 35, glueTaper = 10 }: RscInput): Dieline {
-  if ([L, W, H].some((v) => !(v > 0))) throw new Error('RSC dimensions must be positive')
-  const f = W / 2
+export function slottedDieline({
+  length: L,
+  width: W,
+  height: H,
+  style = 'rsc',
+  glueFlap = 35,
+  glueTaper = 10,
+}: SlottedInput): Dieline {
+  if ([L, W, H].some((v) => !(v > 0))) throw new Error('Box dimensions must be positive')
+  const outer = style === 'fol' ? W : W / 2
+  const inner = W / 2
+  const depths = [outer, inner, outer, inner]
+  const deepest = Math.max(...depths)
+
   const x = [0, glueFlap, glueFlap + L, glueFlap + L + W, glueFlap + 2 * L + W, glueFlap + 2 * L + 2 * W].map(r)
-  const y = [0, f, f + H, 2 * f + H].map(r)
-  const [x0, x1, x2, x3, x4, x5] = x
-  const [y0, y1, y2, y3] = y
+  const y = [0, deepest, deepest + H, 2 * deepest + H].map(r)
+  const [x0, x1, , , , x5] = x
+  const [, y1, y2] = y
 
-  const outline =
-    `M${x1} ${y0} H${x5} V${y3} H${x1} V${y2} ` +
-    `L${x0} ${r(y2 - glueTaper)} V${r(y1 + glueTaper)} L${x1} ${y1} Z`
-  const slots = [x2, x3, x4].flatMap((sx) => [`M${sx} ${y0} V${y1}`, `M${sx} ${y2} V${y3}`])
-  const creases = [
-    `M${x1} ${y1} H${x5}`,
-    `M${x1} ${y2} H${x5}`,
-    ...[x1, x2, x3, x4].map((cx) => `M${cx} ${y1} V${y2}`),
-  ]
+  const flaps = depths.flatMap((d, i) => {
+    const [a, b] = [x[i + 1], x[i + 2]]
+    return [`M${a} ${y1} V${r(y1 - d)} H${b} V${y1}`, `M${a} ${y2} V${r(y2 + d)} H${b} V${y2}`]
+  })
+  const glue = `M${x1} ${y1} L${x0} ${r(y1 + glueTaper)} V${r(y2 - glueTaper)} L${x1} ${y2}`
+  const endEdge = `M${x5} ${y1} V${y2}`
+  const creases = [`M${x1} ${y1} H${x5}`, `M${x1} ${y2} H${x5}`, ...x.slice(1, 5).map((cx) => `M${cx} ${y1} V${y2}`)]
 
-  return { width: x5, height: y3, cuts: [outline, ...slots], creases, x, y }
+  return { width: x5, height: y[3], cuts: [...flaps, glue, endEdge], creases, x, y }
+}
+
+/** The regular slotted container (kept for existing callers) */
+export function rscDieline(input: Omit<SlottedInput, 'style'>): Dieline {
+  return slottedDieline({ ...input, style: 'rsc' })
 }

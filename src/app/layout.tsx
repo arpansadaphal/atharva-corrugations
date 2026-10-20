@@ -7,6 +7,7 @@ import { PreviewBanner } from '@/components/layout/PreviewBanner'
 import { Gated } from '@/components/ui/Gated'
 import { group } from '@/group/group'
 import { gatedValue, getClaimsMode } from '@/lib/claims'
+import { productLinks } from '@/lib/mcb'
 import './globals.css'
 
 // Weights 300–600 only; 200 is dropped (D-08)
@@ -48,7 +49,10 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
 
         <PreviewBanner />
 
-        <Navbar groupName={gatedValue('F-07') ? group['G-name'].value : undefined} whatsappNumber={whatsappNumber} />
+        <Navbar
+          groupName={gatedValue('F-07') ? group['G-name'].value : undefined} whatsappNumber={whatsappNumber}
+          productLinks={productLinks()}
+        />
 
         <main id="main" className="flex-1">
           {children}

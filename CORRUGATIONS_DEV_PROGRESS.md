@@ -10,8 +10,9 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 | M2 Shell (navbar, footer, floating WhatsApp, 404) | C2 | Done 2026-10-20 (commit 229c886) |
 | M3 Quote flow | C3 | Done 2026-10-20 (commit fb199b4). Delivery location on standby, optional |
 | G2 design comps | Phase B | **Approved 2026-10-20**: Hero version 1, 58% copy column, components approved |
-| M4 Homepage | C4 + C7 (part) | **Done 2026-10-20, awaiting owner review (G4)** |
-| M5–M9 | C5–C8, Phases D–E | Not started |
+| M4 Homepage | C4 + C7 (part) | Done 2026-10-20 (commit 45f2e16) |
+| M5 Products hub and family template | C5 | **Done 2026-10-20, awaiting owner review** |
+| M6–M9 | C6–C8, Phases D–E | Not started |
 
 ## Decisions recorded (2026-10-20)
 
@@ -25,6 +26,30 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 - Claim statuses: CONFLICT → verify, EXTERNAL → restricted. RESTRICTED facts are not stored in the repo.
 - Banned strings: scanned in `src/`, `public/` and `package.json`, with a per-file allow-list. Docs, tests and scripts are not scanned.
 - Claim expiry: judged at build time (`CLAIMS_AS_OF` in `build:launch`, plus `check-claims`), because prerendering may not read the clock.
+
+## 2026-10-20 — M5 Products hub and family template
+
+- **Minimum content bar is now computed, not hard-coded** (`src/lib/mcb.ts`). Per mode it counts:
+  - verified formats (≥ 1);
+  - applications (≥ 2);
+  - spec fields (≥ 4);
+  - drawings plus approved photos (≥ 2).
+- Nav, footer, the homepage family index and related links all use `familyHref`, so a family gets its own page by itself once its evidence is confirmed.
+- **Today:**
+  - **production:** no family passes, so every family lives on the hub and every `/products/<family>` URL is a 404;
+  - **preview:** Corrugated boxes passes (2 drawings: RSC + full overlap; 5 spec fields) and has a page; the other four fold.
+- `/products` hub: header with breadcrumb and family anchors; every family as an anchored section (summary, applications, formats, drawings, gated spec table, prefilled quote CTA, link to the full page when one exists); comparison table (real table; empty columns dropped; no customisation column, as there is no per-family evidence); "Not sure which fits?" → `?family=help`; quote band.
+- `/products/[family]` template, F1–F9:
+  - F1 header: breadcrumb, H1, applications, CTAs.
+  - F2 formats: drawings, plus a "Quote for this style" link → `?family=&format=`.
+  - F3 board table and plain-language flute guide; F4 printing and finishing (varnish and coating "through partners").
+  - F5 applications; F6 what we need to quote, with the dimensions diagram.
+  - F7 photographs: none yet. F8 related families; F9 quote band prefilled with the family.
+- Dieline generator now does **full overlap** as well as RSC (`slottedDieline`, `style: 'fol'`).
+- New claims: F-18 (formats, CONFIRMED), F-22 (paper types, VERIFY), and F-18-copy (VERIFY), which gates the format descriptions and flute guide we wrote until the client technical reviewer signs off (SD-10). F-27 rows carry ply; F-27-allied carries its applications.
+- **Proxy** (`src/proxy.ts`, Next 16's renamed middleware) returns a true 404 for unknown family slugs. Without it they returned 200 with not-found content (a soft 404), because request-time params stream before `notFound()`.
+- HRSC is still not shown anywhere (Q-17).
+- Tests: 76 unit, 87 e2e.
 
 ## 2026-10-20 — M4 Homepage
 

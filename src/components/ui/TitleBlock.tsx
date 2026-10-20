@@ -69,7 +69,7 @@ export function TitleBlock({ cells, min = 1, max = 4, theme = 'light', size = 'm
         const flagged = resolvedMode === 'development' && !isPublishable(claim)
         return (
           <div
-            key={c.claim}
+            key={`${c.claim}-${c.label}`}
             data-claim={flagged ? c.claim : undefined}
             title={flagged ? `${c.claim} · ${statusOf(claim)} — hidden at launch unless verified` : undefined}
             className={cn(

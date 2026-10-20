@@ -150,6 +150,33 @@ export const claims = {
   }),
 
   // ── C. Board specification ─────────────────────────────────────────────
+  'F-18': claim({
+    id: 'F-18',
+    title: 'Formats made',
+    value: [
+      'RSC/HRSC',
+      'Die-cut',
+      'Telescopic/full-overlap',
+      'Sheets, pads, partitions',
+      'Layer pads',
+      'Inserts and dividers',
+      'Heavy-duty',
+      'Export boxes',
+      'Corrugated rolls',
+    ],
+    label: 'CONFIRMED',
+    evidence: `${S1} §4.1`,
+    verifiedOn: AUDITED,
+    verifiedBy: AUDITOR,
+    note: '"HRSC" to be expanded before use (Q-17); specifications are separate VERIFY claims',
+  }),
+  'F-18-copy': claim({
+    id: 'F-18-copy',
+    title: 'Format and flute descriptions reviewed by the client',
+    value: true,
+    label: 'VERIFY',
+    note: 'General technical guidance we wrote; ships only after the client technical reviewer signs it off (SD-10)',
+  }),
   'F-20': claim({
     id: 'F-20',
     title: 'Ply range',
@@ -163,6 +190,12 @@ export const claims = {
     value: ['A', 'B', 'C', 'BC'],
     label: 'VERIFY',
     note: 'Combinations BCB, CA, AA, AAA, ACA to be confirmed (Q-18)',
+  }),
+  'F-22': claim({
+    id: 'F-22',
+    title: 'Paper types',
+    value: ['Kraft', 'Virgin', 'Recycled', 'Duplex', 'White-top', 'Semi-chemical', 'Water-repellent'],
+    label: 'VERIFY',
   }),
   'F-23': claim({
     id: 'F-23',
@@ -182,9 +215,9 @@ export const claims = {
     id: 'F-27',
     title: 'Products and the industries they serve (first three rows)',
     value: [
-      { format: 'RSC/HRSC boxes, 3 and 5 ply', industries: ['White goods', 'FMCG', 'Electronics', 'Food and beverage'] },
-      { format: 'Die-cut boxes', industries: ['Fruits and vegetables', 'Engineering goods', 'Sanitary ware', 'E-commerce'] },
-      { format: 'Heavy-duty boxes', industries: ['Export', 'Automotive', 'Engineering parts'] },
+      { format: 'RSC/HRSC boxes', ply: [3, 5], industries: ['White goods', 'FMCG', 'Electronics', 'Food and beverage'] },
+      { format: 'Die-cut boxes', ply: [], industries: ['Fruits and vegetables', 'Engineering goods', 'Sanitary ware', 'E-commerce'] },
+      { format: 'Heavy-duty boxes', ply: [], industries: ['Export packaging', 'Automotive', 'Engineering parts'] },
     ],
     label: 'CONFIRMED',
     evidence: `${S1} §4.3`,
@@ -195,7 +228,10 @@ export const claims = {
   'F-27-allied': claim({
     id: 'F-27-allied',
     title: 'Protective and allied products',
-    value: ['Paper core assemblies', 'Angle corners', 'Honeycomb', 'Paper pulp trays'],
+    value: {
+      products: ['Paper core assemblies', 'Angle corners', 'Honeycomb', 'Paper pulp trays'],
+      applications: ['Centrifugal compressor packaging'],
+    },
     label: 'VERIFY',
     note: 'Made at the plant or supplied? (C-07, Q-05). Tape, polybags, pallets left out until made-at-plant is verified',
   }),

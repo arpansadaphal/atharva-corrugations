@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { Gated } from '@/components/ui/Gated'
-import { companyLinks, privacyHref, productLinks } from '@/data/navigation'
+import { companyLinks, privacyHref } from '@/data/navigation'
 import { group } from '@/group/group'
 import { formatPhone, telHref } from '@/lib/format'
+import { productLinks } from '@/lib/mcb'
 import { contextForPath, whatsappUrl } from '@/lib/whatsapp'
 import { FooterColumn } from './FooterColumn'
 
@@ -70,7 +71,7 @@ export function Footer() {
 
         <FooterColumn title="Products">
           <ul className="flex flex-col gap-2">
-            {productLinks.map((l) => (
+            {productLinks().map((l) => (
               <li key={l.href}>
                 <Link href={l.href} className={linkClass}>
                   {l.label}

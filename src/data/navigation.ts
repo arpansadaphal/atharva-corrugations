@@ -1,8 +1,8 @@
-import { families, familyHref } from './products'
-
 /**
  * Site navigation (Sitemap §3), kept apart from page content. Home is the
- * logo link, so it is not listed.
+ * logo link, so it is not listed. Product links depend on the minimum
+ * content bar, so they are built on the server (productLinks in lib/mcb.ts)
+ * and passed to the navbar.
  */
 
 export interface NavLink {
@@ -10,13 +10,8 @@ export interface NavLink {
   href: string
 }
 
-export const productLinks: NavLink[] = [
-  ...families.map((f) => ({ label: f.name, href: familyHref(f) })),
-  { label: 'All products', href: '/products' },
-]
-
-export const primaryNav: (NavLink & { children?: NavLink[] })[] = [
-  { label: 'Products', href: '/products', children: productLinks },
+export const primaryNav: (NavLink & { hasMenu?: boolean })[] = [
+  { label: 'Products', href: '/products', hasMenu: true },
   { label: 'Industries', href: '/industries' },
   { label: 'Custom Packaging', href: '/custom-packaging' },
   { label: 'Manufacturing & Quality', href: '/manufacturing-and-quality' },

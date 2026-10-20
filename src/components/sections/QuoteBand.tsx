@@ -8,6 +8,8 @@ interface QuoteBandProps {
   headline?: string
   /** Primary action label, e.g. "Send us your drawing" on Custom Packaging */
   primaryLabel?: string
+  /** Quote link, prefilled from the page (Sitemap §7.1) */
+  quoteLink?: string
   headingLevel?: 'h2' | 'h3'
 }
 
@@ -20,6 +22,7 @@ export function QuoteBand({
   whatsappHref,
   headline = 'Send us your packaging requirement.',
   primaryLabel = 'Request a quote',
+  quoteLink = quoteHref,
   headingLevel: Heading = 'h2',
 }: QuoteBandProps) {
   const reply = gatedValue('F-16')
@@ -36,7 +39,7 @@ export function QuoteBand({
             {reply && ` We reply within ${reply} working days${hours ? `, ${hours.days}` : ''}.`}
           </p>
           <div className="flex w-full flex-col justify-center gap-3 md:w-auto md:flex-row">
-            <Button href={quoteHref} size="lg">
+            <Button href={quoteLink} size="lg">
               {primaryLabel}
             </Button>
             {whatsappHref && (

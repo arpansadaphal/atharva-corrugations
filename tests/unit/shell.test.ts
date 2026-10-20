@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { primaryNav, productLinks } from '@/data/navigation'
-import { families, familyHref } from '@/data/products'
+import { primaryNav } from '@/data/navigation'
+import { families, familyBySlug } from '@/data/products'
+import { familyHref, productLinks } from '@/lib/mcb'
 import { FLOATING_TOKEN, contextForPath, whatsappMessage, whatsappUrl } from '@/lib/whatsapp'
 import { clientReadsGate } from '../../scripts/lib/claims-check'
 
@@ -16,12 +17,14 @@ describe('navigation', () => {
     ])
   })
   it('lists five families plus All products', () => {
-    expect(productLinks).toHaveLength(6)
-    expect(productLinks.at(-1)).toEqual({ label: 'All products', href: '/products' })
+    const links = productLinks('preview')
+    expect(links).toHaveLength(6)
+    expect(links.at(-1)).toEqual({ label: 'All products', href: '/products' })
   })
   it('points folded families at the hub anchor, others at their page', () => {
-    expect(familyHref({ slug: 'sheets-pads-and-inserts', mcb: 'fail' })).toBe('/products#sheets-pads-and-inserts')
-    expect(familyHref({ slug: 'die-cut-boxes', mcb: 'pending' })).toBe('/products/die-cut-boxes')
+    expect(familyHref(familyBySlug('sheets-pads-and-inserts')!, 'preview')).toBe('/products#sheets-pads-and-inserts')
+    expect(familyHref(familyBySlug('corrugated-boxes')!, 'preview')).toBe('/products/corrugated-boxes')
+    expect(familyHref(familyBySlug('corrugated-boxes')!, 'production')).toBe('/products#corrugated-boxes')
   })
   it('gives every family a unique WhatsApp token', () => {
     expect(new Set(families.map((f) => f.token)).size).toBe(families.length)

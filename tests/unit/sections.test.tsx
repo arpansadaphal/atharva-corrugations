@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { rscDieline } from '@/components/illustration/dieline'
+import { rscDieline, slottedDieline } from '@/components/illustration/dieline'
 import { ManufacturingQuality, capabilityGroups } from '@/components/sections/ManufacturingQuality'
 
 describe('RSC dieline', () => {
@@ -13,9 +13,16 @@ describe('RSC dieline', () => {
     expect(d.height).toBe(500)
   })
 
-  it('has one outline and six slot cuts, two flap creases and four panel creases', () => {
-    expect(d.cuts).toHaveLength(7)
+  it('cuts eight flaps, the glue flap and the end edge; creases two folds and four panel lines', () => {
+    expect(d.cuts).toHaveLength(10)
     expect(d.creases).toHaveLength(6)
+  })
+
+  it('full overlap makes the outer flaps W deep and the inner flaps W/2', () => {
+    const fol = slottedDieline({ length: 400, width: 300, height: 200, glueFlap: 35, style: 'fol' })
+    expect(fol.y).toEqual([0, 300, 500, 800])
+    expect(fol.cuts[0]).toBe('M35 300 V0 H435 V300') // outer flap on the first L panel
+    expect(fol.cuts[2]).toBe('M435 300 V150 H735 V300') // inner flap on the W panel
   })
 
   it('rejects impossible boxes', () => {

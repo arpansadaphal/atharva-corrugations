@@ -1,8 +1,10 @@
 import { cn } from '@/lib/utils'
-import { rscDieline, type RscInput } from './dieline'
+import { slottedDieline, type SlottedInput } from './dieline'
 
 interface DielinePlateProps {
-  box?: RscInput
+  box?: SlottedInput
+  /** Accessible description; defaults to the RSC wording */
+  label?: string
   theme?: 'light' | 'dark'
   /** Play the one-time draw sequence (hero only) */
   animate?: boolean
@@ -20,12 +22,13 @@ interface DielinePlateProps {
  */
 export function DielinePlate({
   box = { length: 400, width: 300, height: 300 },
+  label,
   theme = 'dark',
   animate = false,
   callouts = true,
   className,
 }: DielinePlateProps) {
-  const d = rscDieline(box)
+  const d = slottedDieline(box)
   const pad = 70
   const [, x1, x2, x3, , x5] = d.x
   const [y0, y1, y2] = d.y
@@ -41,7 +44,10 @@ export function DielinePlate({
     <svg
       viewBox={`${-pad} ${-pad} ${d.width + pad * 2} ${d.height + pad * 2}`}
       role="img"
-      aria-label="Illustration: dieline of a regular slotted carton, unfolded flat. Solid lines are cuts, dashed lines are creases, with length, width and height marked."
+      aria-label={
+        label ??
+        `Illustration: dieline of a ${box.style === 'fol' ? 'full-overlap' : 'regular slotted'} carton, unfolded flat. Solid lines are cuts, dashed lines are creases${callouts ? ', with length, width and height marked' : ''}.`
+      }
       className={cn('h-auto w-full', animate && 'dieline-animate', className)}
       fill="none"
     >

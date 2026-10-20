@@ -16,6 +16,8 @@ export interface NavbarProps {
   groupName?: string
   /** WhatsApp number, resolved on the server; no control without it */
   whatsappNumber?: string
+  /** Products dropdown links, resolved on the server (minimum content bar) */
+  productLinks: NavLink[]
 }
 
 function isActive(pathname: string, href: string) {
@@ -27,7 +29,7 @@ function isActive(pathname: string, href: string) {
  * Group navbar (D-04); scroll only deepens the hairline into a shadow.
  * Full navigation from 1280 px; below that, logo, WhatsApp control and menu button.
  */
-export function Navbar({ groupName, whatsappNumber }: NavbarProps) {
+export function Navbar({ groupName, whatsappNumber, productLinks }: NavbarProps) {
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -61,9 +63,9 @@ export function Navbar({ groupName, whatsappNumber }: NavbarProps) {
         <nav aria-label="Main" className="hidden nav:block">
           <ul className="flex items-center gap-5 xl:gap-8">
             {primaryNav.map((item) =>
-              item.children ? (
+              item.hasMenu ? (
                 <li key={item.href}>
-                  <ProductsMenu label={item.label} links={item.children} active={isActive(pathname, item.href)} />
+                  <ProductsMenu label={item.label} links={productLinks} active={isActive(pathname, item.href)} />
                 </li>
               ) : (
                 <li key={item.href}>
