@@ -18,7 +18,7 @@
     "test:e2e": "playwright test",
     "check:bundle": "tsx scripts/check-bundle.ts",
     "lhci": "LHCI_BUILD_CONTEXT__CURRENT_BRANCH=local npx -y @lhci/cli@0.15.1 autorun --config=lighthouserc.json",
-    "build:vercel": "if [ \"$VERCEL_ENV\" = \"production\" ]; then npm run build:launch; else npm run build; fi"
+    "build:vercel": "if [ \"$LAUNCH\" = \"true\" ]; then npm run build:launch; else npm run build; fi"
   },
   "dependencies": {
     "clsx": "2.1.1",

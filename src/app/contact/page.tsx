@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ContactForm } from '@/components/forms/ContactForm'
+import { ReviewNotice } from '@/components/forms/ReviewNotice'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Gated } from '@/components/ui/Gated'
 import { SectionHeader } from '@/components/ui/SectionHeader'
@@ -62,6 +63,7 @@ export default function ContactPage() {
         <div className="container-site grid gap-12 lg:grid-cols-12">
           <div className="flex flex-col gap-6 lg:col-span-7">
             <SectionHeader headline="Send us a message" />
+            {c.formEnabled && !c.mailLive && <ReviewNotice />}
             {c.formEnabled ? (
               <ContactForm
                 whatsappNumber={c.whatsappNumber}

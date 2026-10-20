@@ -19,6 +19,8 @@ export function rfqConfig(mode: ClaimsMode = getClaimsMode(), env: Env = process
   return {
     /** Forms stay offline in production until the privacy policy is published (Sitemap §2, E-08) */
     formEnabled: mode !== 'production' || gatedValue('F-66', mode) !== undefined,
+    /** Without an email provider, preview builds log submissions instead of sending them */
+    mailLive: Boolean(env.RESEND_API_KEY),
     boardOptions,
     boardValues: [BOARD_NOT_SURE, ...boardOptions.map((o) => o.value)].filter((v, i, a) => a.indexOf(v) === i),
     industries: gatedValue('F-45', mode) ?? [],

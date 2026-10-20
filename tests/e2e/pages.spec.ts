@@ -76,6 +76,13 @@ test('manufacturing and quality: no area, capacity or team figures; varnish unde
   await expect(page.getByText('Our customers audit and approve our plant.')).toBeVisible()
 })
 
+test('review copies say the forms are not delivered while no email provider is set', async ({ page }) => {
+  for (const path of ['/request-quote', '/contact']) {
+    await page.goto(path)
+    await expect(page.getByRole('note').filter({ hasText: 'Review copy' }), path).toBeVisible()
+  }
+})
+
 test('about: Group section present, no "registered office"', async ({ page }) => {
   await page.goto('/about')
   await expect(page.getByRole('heading', { name: 'Part of the Atharva Group' })).toBeVisible()

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { ReviewNotice } from '@/components/forms/ReviewNotice'
 import { RfqForm } from '@/components/forms/RfqForm'
 import { InternalDimensions } from '@/components/illustration/InternalDimensions'
 import { Button } from '@/components/ui/Button'
@@ -61,6 +62,11 @@ export default function RequestQuotePage() {
 
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-7">
+            {c.formEnabled && !c.mailLive && (
+              <div className="mb-8">
+                <ReviewNotice />
+              </div>
+            )}
             {c.formEnabled ? (
               <RfqForm
                 boardOptions={c.boardOptions}

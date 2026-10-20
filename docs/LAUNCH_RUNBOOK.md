@@ -17,7 +17,7 @@ Each step names who must do it. Nothing touches the client's DNS until steps 1 a
 
 ## 3. Staging on Vercel (developer)
 
-1. Import the repository; framework preset Next.js. `vercel.json` sets region `bom1` (Mumbai) and the build command `npm run build:vercel`. That runs the launch build (claims gate, then `LAUNCH=true`) for Production and the preview build for everything else. Do not set `LAUNCH` by hand.
+1. Import the repository; framework preset Next.js. `vercel.json` sets region `bom1` (Mumbai) and the build command `npm run build:vercel`. That runs the **preview** build (every claim shown with the "unverified" banner, `noindex`), unless the environment variable `LAUNCH=true` is set. Set `LAUNCH=true` on the Production environment only at go-live (step 5): it runs the claims gate and hides everything unverified.
 2. Environment variables (Production and Preview), from `.env.example`. Never copy Polymers values.
 3. Turn on **Deployment Protection** (password) for preview and staging.
 4. **Firewall:** add a rate-limit rule for `/api/rfq` and `/api/contact` (for example 10 requests per minute per IP) (Technical §7.6).
@@ -34,7 +34,7 @@ Each step names who must do it. Nothing touches the client's DNS until steps 1 a
 
 ## 5. Cut-over (developer with client DNS access)
 
-1. 24–48 hours before: lower the TTL on the apex and `www` records to 300 seconds.
+1. 24–48 hours before: lower the TTL on the apex and `www` records to 300 seconds. In Vercel, set `LAUNCH=true` on the Production environment and redeploy. Confirm the claims gate passes and the deployment shows confirmed content only.
 2. Add Resend's records. **Merge** the SPF include into the single existing SPF record (only one SPF record is valid); add the DKIM CNAMEs; DMARC `p=none` (monitor) first.
 3. Point `www` (canonical) and the apex at Vercel as its domain settings instruct. **Leave the MX records untouched.**
 4. In Vercel, set `www.atharvacorrugations.com` as primary and redirect the apex to it.
