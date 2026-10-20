@@ -15,12 +15,28 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - run: npm audit --omit=dev --audit-level=high
       - run: npm run check
+
+      # Preview build: browser tests (Chrome, Firefox, WebKit, mobile WebKit)
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:e2e
         env:
           CI: 'true'
-      # Blocking claims gate on the production branch (Technical plan §13.1)
-      - if: github.ref == 'refs/heads/main'
-        run: npm run check:claims:launch
+      - run: npm run check:bundle
+
+      # Analytics consent: needs a build with a GA ID (Google blocked in the test)
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_GA_ID: G-TEST
+      - run: npx playwright test consent
+        env:
+          CI: 'true'
+          CONSENT_TEST: '1'
+
+      # Production build: claims gate, then Lighthouse budgets (Technical §8)
+      - run: npm run build:launch
+      - run: npm run lhci
+        env:
+          CHROME_PATH: /usr/bin/google-chrome

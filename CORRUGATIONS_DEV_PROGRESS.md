@@ -13,8 +13,9 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 | M4 Homepage | C4 + C7 (part) | Done 2026-10-20 (commit 45f2e16) |
 | M5 Products hub and family template | C5 | Done 2026-10-20 (commit dee4b09) |
 | M6 Inner pages | C6 | Done 2026-10-20 (commit 5b403ba) |
-| M7 SEO, analytics, privacy | C8 | **Done 2026-10-20, awaiting owner review** |
-| M8–M9 | Phases D–E | Not started |
+| M7 SEO, analytics, privacy | C8 | Done 2026-10-20 (commit fdec93a) |
+| M8 QA and pre-launch | Phase D | **Automatable part done 2026-10-20**; open items in `docs/QA_CHECKLIST.md` need devices, accounts or the client |
+| M9 Launch | Phase E | Waits for G6/G7; steps in `docs/LAUNCH_RUNBOOK.md` |
 
 ## Decisions recorded (2026-10-20)
 
@@ -28,6 +29,26 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 - Claim statuses: CONFLICT → verify, EXTERNAL → restricted. RESTRICTED facts are not stored in the repo.
 - Banned strings: scanned in `src/`, `public/` and `package.json`, with a per-file allow-list. Docs, tests and scripts are not scanned.
 - Claim expiry: judged at build time (`CLAIMS_AS_OF` in `build:launch`, plus `check-claims`), because prerendering may not read the clock.
+
+## 2026-10-20 — M8 QA and pre-launch (automatable part)
+
+- **Security headers** (`security-headers.ts`, Technical §11):
+  - CSP without nonces: nonces would force dynamic rendering and break Partial Prerendering, so `'unsafe-inline'` scripts are allowed for Next's bootstrap and all else is limited to self.
+  - Google origins are added only with a GA ID, Cloudflare only with Turnstile, `'unsafe-eval'` only in dev.
+  - HSTS one year, without includeSubDomains or preload until the DNS and mail hosts are known (C-02). Also nosniff, strict-origin referrer, X-Frame-Options DENY, Permissions-Policy; `X-Powered-By` removed.
+  - e2e checks the headers and that no page reports a CSP violation, including after GA consent.
+- zod set to `jitless`: it tried `new Function`, which the CSP blocks, so every form page logged a violation.
+- **First-load JS:** zod now loads when a form is first focused (`rfq-options.ts` holds the zod-free constants). Contact went from 201 to 169 KB, the quote page from 204 to 173 KB.
+  - New `npm run check:bundle` measures what each page's HTML loads, excluding `noModule` polyfills and prefetched routes, which Lighthouse's resource summary wrongly counted.
+  - **Budgets:** 170 KB for home and content pages (Technical §8 sets it for home); **180 KB for the two form pages** (react-hook-form plus the form, about 18 KB). Hero SVG 2.6 KB (budget 30 KB).
+- **Lighthouse CI** (`lighthouserc.json`, `npm run lhci`): launch build, four pages, median of three, **DevTools throttling**. Every assertion passes: Performance 99–100, Accessibility, Best Practices and SEO 100, LCP 1.5–1.6 s, CLS ≤ 0.016.
+  - Simulated throttling gave LCP 2.0–2.8 s on some pages. Unthrottled LCP is 136 ms; I tested and ruled out font swap and hydration, so it is treated as a simulation artefact. Recorded in the QA checklist.
+- **Cross-browser:** WebKit (desktop and iPhone 13 size) passes the cross-browser e2e set. Firefox runs in CI on Linux only; Playwright's Firefox cannot create a profile on the development Mac (macOS 27). Run it locally with `E2E_FIREFOX=1`.
+- `vercel.json`: region `bom1`, build command `build:vercel` (launch build only for Production).
+- Dependabot (weekly npm, monthly actions).
+- CI now runs: audit (production dependencies), checks, preview build with all browsers, bundle budgets, the consent build, then the launch build with Lighthouse CI.
+- `scripts/synthetic-rfq.ts` plus a weekly workflow, switched on by the `SITE_URL` repository variable. Tested locally: reference ACQ-261020-ERYS.
+- `docs/QA_CHECKLIST.md` (Roadmap §7 with status) and `docs/LAUNCH_RUNBOOK.md` (accounts, DNS inventory, staging, go/no-go, cut-over, rollback, after launch).
 
 ## 2026-10-20 — M7 SEO, analytics, privacy
 

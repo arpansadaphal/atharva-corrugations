@@ -15,7 +15,10 @@
     "check:claims": "tsx scripts/check-claims.ts",
     "check:claims:launch": "LAUNCH=true tsx scripts/check-claims.ts",
     "check": "npm run typecheck && npm run lint && npm run test && npm run check:contrast && npm run check:banned && npm run check:claims",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "check:bundle": "tsx scripts/check-bundle.ts",
+    "lhci": "LHCI_BUILD_CONTEXT__CURRENT_BRANCH=local npx -y @lhci/cli@0.15.1 autorun --config=lighthouserc.json",
+    "build:vercel": "if [ \"$VERCEL_ENV\" = \"production\" ]; then npm run build:launch; else npm run build; fi"
   },
   "dependencies": {
     "clsx": "2.1.1",

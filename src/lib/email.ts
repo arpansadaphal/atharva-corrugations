@@ -1,12 +1,5 @@
-import {
-  ENQUIRY_TYPES,
-  FAMILY_OPTIONS,
-  PRINTING_OPTIONS,
-  REPEAT_OPTIONS,
-  SPECIAL_NEEDS,
-  type ContactData,
-  type RfqData,
-} from './rfq-schema'
+import { ENQUIRY_TYPES, FAMILY_OPTIONS, PRINTING_OPTIONS, REPEAT_OPTIONS, SPECIAL_NEEDS } from './rfq-options'
+import type { ContactData, RfqData } from './rfq-schema'
 
 /**
  * Quote-request emails (Sitemap §7.3, §7.6; Technical §7.4; Content §10.3).

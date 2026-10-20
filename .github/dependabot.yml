@@ -1,0 +1,18 @@
+# Weekly dependency updates (Technical §2 version policy). Versions are pinned
+# exactly in package.json, so each update arrives as its own reviewed PR.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      next-and-react:
+        patterns: ['next', 'eslint-config-next', 'react', 'react-dom', '@types/react', '@types/react-dom']
+      tooling:
+        patterns: ['vitest', 'tsx', 'typescript', '@playwright/test', '@axe-core/playwright', 'eslint*', '@types/node']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { useForm, type FieldErrors } from 'react-hook-form'
 import { Button } from '@/components/ui/Button'
-import { contactSchema, type ContactData, type ContactInput } from '@/lib/rfq-schema'
+import type { ContactData, ContactInput } from '@/lib/rfq-schema'
 import { whatsappUrl } from '@/lib/whatsapp'
 import { Field, controlClass, fieldId } from './fields'
 import { flatErrors, zodResolver } from './zod-resolver'
@@ -22,6 +22,10 @@ export interface ContactFormProps {
 type Status = { kind: 'idle' } | { kind: 'submitting' } | { kind: 'success'; reference: string } | { kind: 'error' }
 
 const TIMEOUT_MS = 15_000
+
+// The schema (and zod) load on first focus, not with the page (Technical §8)
+const loadSchema = () => import('@/lib/rfq-schema').then((m) => m.contactSchema)
+const contactResolver = zodResolver<ContactInput, ContactData>(loadSchema)
 /** Wall-clock reads kept out of render (they only run in effects and handlers) */
 const clock = () => Date.now()
 
@@ -37,7 +41,7 @@ export function ContactForm({ whatsappNumber, whatsappDisplay, phoneDisplay, pho
     getValues,
     setError,
     formState: { errors },
-  } = useForm<ContactInput, unknown, ContactData>({ resolver: zodResolver<ContactInput, ContactData>(contactSchema), shouldFocusError: false })
+  } = useForm<ContactInput, unknown, ContactData>({ resolver: contactResolver, shouldFocusError: false })
 
   const [status, setStatus] = useState<Status>({ kind: 'idle' })
   const [summary, setSummary] = useState<[string, string][]>([])
@@ -107,7 +111,12 @@ export function ContactForm({ whatsappNumber, whatsappDisplay, phoneDisplay, pho
   const submitting = status.kind === 'submitting'
 
   return (
-    <form noValidate onSubmit={(e) => handleSubmit(onValid, onInvalid)(e)} className="flex flex-col gap-6">
+    <form
+      noValidate
+      onSubmit={(e) => handleSubmit(onValid, onInvalid)(e)}
+      onFocus={() => void loadSchema()} // warm the validation code while the visitor types
+      className="flex flex-col gap-6"
+    >
       {summary.length > 0 && (
         <div ref={summaryRef} tabIndex={-1} role="alert" className="border-l-4 border-error bg-paper-50 p-4 outline-none">
           <h3 className="text-copy font-semibold text-ink">

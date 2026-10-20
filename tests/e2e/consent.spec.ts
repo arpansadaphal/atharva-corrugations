@@ -19,8 +19,12 @@ const gaRequests = (page: import('@playwright/test').Page) => {
   return urls
 }
 
-test('nothing loads before a choice; Accept loads GA and is remembered', async ({ page }) => {
+test('nothing loads before a choice; Accept loads GA under the CSP and is remembered', async ({ page }) => {
   const urls = gaRequests(page)
+  await page.addInitScript(() => {
+    ;(window as unknown as { csp: string[] }).csp = []
+    document.addEventListener('securitypolicyviolation', (e) => (window as unknown as { csp: string[] }).csp.push(e.blockedURI))
+  })
   await page.goto('/')
   const notice = page.getByRole('region', { name: 'Analytics choice' })
   await expect(notice).toBeVisible()
@@ -28,6 +32,7 @@ test('nothing loads before a choice; Accept loads GA and is remembered', async (
   await notice.getByRole('button', { name: 'Accept' }).click()
   await expect(notice).toBeHidden()
   await expect.poll(() => urls.length).toBeGreaterThan(0)
+  expect(await page.evaluate(() => (window as unknown as { csp: string[] }).csp)).toEqual([])
   await page.reload()
   await expect(page.getByRole('region', { name: 'Analytics choice' })).toHaveCount(0)
 })

@@ -1,0 +1,23 @@
+name: Weekly synthetic quote request
+
+# Technical §7.8: confirm every week that the live quote form still delivers.
+# Enable once the site is live: set the SITE_URL repository variable.
+on:
+  schedule:
+    - cron: '30 4 * * 1' # Mondays 10:00 IST
+  workflow_dispatch:
+
+jobs:
+  synthetic:
+    if: ${{ vars.SITE_URL != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx tsx scripts/synthetic-rfq.ts
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}

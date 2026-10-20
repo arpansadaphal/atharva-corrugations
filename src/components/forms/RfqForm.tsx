@@ -16,10 +16,8 @@ import {
   PRINTING_OPTIONS,
   REPEAT_OPTIONS,
   SPECIAL_NEEDS,
-  makeRfqSchema,
-  type RfqData,
-  type RfqInput,
-} from '@/lib/rfq-schema'
+} from '@/lib/rfq-options'
+import type { RfqData, RfqInput } from '@/lib/rfq-schema'
 import { cn } from '@/lib/utils'
 import { whatsappUrl } from '@/lib/whatsapp'
 import { Choice, ErrorText, Field, controlClass, fieldId } from './fields'
@@ -58,7 +56,14 @@ const SPEC_FIELDS = ['lengthMm', 'widthMm', 'heightMm', 'board', 'printing', 'sp
  */
 export function RfqForm(props: RfqFormProps) {
   const { boardOptions, boardValues, industries, whatsappNumber, whatsappDisplay, phoneDisplay, phoneDigits, replyPromise } = props
-  const schema = useMemo(() => makeRfqSchema({ boardValues, industries }), [boardValues, industries])
+  // The schema (and zod) load on first focus, not with the page (Technical §8)
+  const resolver = useMemo(
+    () =>
+      zodResolver<RfqInput, RfqData>(() =>
+        import('@/lib/rfq-schema').then((m) => m.makeRfqSchema({ boardValues, industries })),
+      ),
+    [boardValues, industries],
+  )
 
   const {
     register,
@@ -69,7 +74,7 @@ export function RfqForm(props: RfqFormProps) {
     setError,
     formState: { errors },
   } = useForm<RfqInput, unknown, RfqData>({
-    resolver: zodResolver<RfqInput, RfqData>(schema),
+    resolver,
     defaultValues: {
       enquiryType: 'quote',
       family: '' as RfqInput['family'],
@@ -133,6 +138,7 @@ export function RfqForm(props: RfqFormProps) {
   const onStart = () => {
     if (started.current) return
     started.current = true
+    void import('@/lib/rfq-schema') // warm the validation code while the visitor types
     track('rfq_start', { page: '/request-quote', family: getValues('family') || undefined })
   }
 

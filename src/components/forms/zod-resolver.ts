@@ -1,10 +1,18 @@
 import type { FieldErrors, FieldValues, Resolver } from 'react-hook-form'
 import type { ZodType } from 'zod'
 
-/** zod → react-hook-form resolver: nested error paths become nested errors */
-export function zodResolver<In extends FieldValues, Out>(schema: ZodType<Out, In>): Resolver<In, unknown, Out> {
+type Loader<In, Out> = () => Promise<ZodType<Out, In>>
+
+/**
+ * zod → react-hook-form resolver: nested error paths become nested errors.
+ * Takes a loader, so a form can fetch its schema (and zod) when the visitor
+ * starts filling it instead of on page load (Technical §8 budget). The
+ * schema is loaded once and reused.
+ */
+export function zodResolver<In extends FieldValues, Out>(load: Loader<In, Out>): Resolver<In, unknown, Out> {
+  let schema: Promise<ZodType<Out, In>> | undefined
   return async (values) => {
-    const result = await schema.safeParseAsync(values)
+    const result = await (await (schema ??= load())).safeParseAsync(values)
     if (result.success) return { values: result.data, errors: {} }
     const errors: Record<string, unknown> = {}
     for (const issue of result.error.issues) {
