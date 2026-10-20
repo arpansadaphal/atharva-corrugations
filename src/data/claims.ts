@@ -178,6 +178,61 @@ export const claims = {
     note: 'Corrugator or paper-reel width? (Q-04)',
   }),
 
+  'F-27': claim({
+    id: 'F-27',
+    title: 'Products and the industries they serve (first three rows)',
+    value: [
+      { format: 'RSC/HRSC boxes, 3 and 5 ply', industries: ['White goods', 'FMCG', 'Electronics', 'Food and beverage'] },
+      { format: 'Die-cut boxes', industries: ['Fruits and vegetables', 'Engineering goods', 'Sanitary ware', 'E-commerce'] },
+      { format: 'Heavy-duty boxes', industries: ['Export', 'Automotive', 'Engineering parts'] },
+    ],
+    label: 'CONFIRMED',
+    evidence: `${S1} §4.3`,
+    verifiedOn: AUDITED,
+    verifiedBy: AUDITOR,
+    note: 'Rows 4+ (paper cores, allied products, tape) are VERIFY and not stored here yet',
+  }),
+  'F-27-allied': claim({
+    id: 'F-27-allied',
+    title: 'Protective and allied products',
+    value: ['Paper core assemblies', 'Angle corners', 'Honeycomb', 'Paper pulp trays'],
+    label: 'VERIFY',
+    note: 'Made at the plant or supplied? (C-07, Q-05). Tape, polybags, pallets left out until made-at-plant is verified',
+  }),
+  'F-30': claim({
+    id: 'F-30',
+    title: 'In-house packaging design support',
+    value: {
+      inputs: ['Drawings or dielines', 'CAD files', 'A physical sample', 'A specification sheet', 'A conversation'],
+      outputs: ['Dieline', '3D mock-up', 'Physical sample', 'Test report', 'Packaging recommendation'],
+    },
+    label: 'CONFIRMED',
+    evidence: `${S1} §4.5`,
+    verifiedOn: AUDITED,
+    verifiedBy: AUDITOR,
+    note: 'Which outputs are routine is still to confirm (Q-22) before Custom Packaging C4 lists them',
+  }),
+  'F-29': claim({
+    id: 'F-29',
+    title: 'Processes at the plant',
+    value: {
+      converting: ['Flatbed die cutting', 'Rotary die cutting', 'Slotting', 'Creasing', 'Stitching', 'Gluing and pasting', 'Lamination'],
+      printing: ['Flexo printing', 'Offset-printed lamination', 'Screen printing', 'Up to 4 colours'],
+      protection: ['Moisture-resistant treatment', 'Waterproof treatment'],
+    },
+    label: 'VERIFY',
+    note: 'Machinery list needed (Q-04, Q-05, Q-20). Corrugating is not in the client list (C-08)',
+  }),
+  'F-29-varnish': claim({
+    id: 'F-29-varnish',
+    title: 'Varnish and coating are done by partners',
+    value: 'Varnish and coating',
+    label: 'CONFIRMED',
+    evidence: `${S1} §4.4`,
+    verifiedOn: AUDITED,
+    verifiedBy: AUDITOR,
+  }),
+
   // ── E. Quality and certification ───────────────────────────────────────
   'F-38': claim({
     id: 'F-38',
@@ -246,6 +301,17 @@ export const claims = {
     verifiedOn: AUDITED,
     verifiedBy: AUDITOR,
     note: 'Export packaging is a product type, never an export claim (C-01)',
+  }),
+
+  'F-46': claim({
+    id: 'F-46',
+    title: 'Homepage top four industries',
+    value: ['White goods', 'Engineering goods', 'FMCG', 'Pharma and healthcare'],
+    label: 'CONFIRMED',
+    evidence: `${S1} §7`,
+    verifiedOn: AUDITED,
+    verifiedBy: AUDITOR,
+    note: 'Automotive not in the four; pharma has no compliance evidence (C-11, Q-25)',
   }),
 
   // ── H. Legal identifiers ───────────────────────────────────────────────

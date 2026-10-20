@@ -79,6 +79,8 @@
   /* Type roles (Design §6) */
   --text-display: 4rem;
   --text-display--line-height: 4.5rem;
+  --text-display-md: 3.25rem;
+  --text-display-md--line-height: 3.75rem;
   --text-display-sm: 2.5rem;
   --text-display-sm--line-height: 2.875rem;
   --text-h2: 2.5rem;
@@ -188,6 +190,41 @@
 .nav-underline:hover::after,
 .nav-underline[data-active]::after {
   transform: scaleX(1);
+}
+
+/* Hero dieline sequence (Design §9): cut lines draw ≈900 ms, creases and
+   callouts fade in, the title block fills; ≈1.2 s, once, then still. Pure
+   CSS, so with no JavaScript it still ends static; reduced motion makes it
+   instant through the global rule below. */
+@keyframes dieline-wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.dieline-animate .dieline-cuts {
+  animation: dieline-wipe 900ms var(--ease-out-expo) both;
+}
+
+.dieline-animate .dieline-crease {
+  animation: fade-in 400ms var(--ease-out-expo) 450ms both;
+}
+
+.dieline-animate .dieline-callouts,
+.hero-strip-animate {
+  animation: fade-in 300ms var(--ease-out-expo) 900ms both;
 }
 
 /* Crease Mark (Design §7.1): 12 px cut + two 4 px crease dashes, 2 px tall,

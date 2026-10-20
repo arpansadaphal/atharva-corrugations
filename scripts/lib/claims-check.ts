@@ -14,7 +14,7 @@ export interface Problem {
 }
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
-const CLAIM_REF = /['"`]((?:F|G)-[0-9A-Za-z]+)['"`]/g
+const CLAIM_REF = /['"`]((?:F|G)-[0-9A-Za-z]+(?:-[a-z]+)?)['"`]/g
 /** Only these files may read the registry object directly; everything else goes through the gate. */
 export const REGISTRY_READERS = ['src/lib/claims.ts', 'src/components/ui/Gated.tsx', 'src/components/ui/TitleBlock.tsx']
 

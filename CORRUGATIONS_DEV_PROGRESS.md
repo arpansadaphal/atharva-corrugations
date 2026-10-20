@@ -8,11 +8,15 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 |---|---|---|
 | M1 Foundation | C1 | Done 2026-10-20 (commit 4e14176) |
 | M2 Shell (navbar, footer, floating WhatsApp, 404) | C2 | Done 2026-10-20 (commit 229c886) |
-| M3 Quote flow | C3 | **Done 2026-10-20, awaiting owner review** (delivery-location decision still open) |
-| M4 Homepage | C4 + C7 | Blocked on G2 (hero and component comps) |
+| M3 Quote flow | C3 | Done 2026-10-20 (commit fb199b4). Delivery location on standby, optional |
+| G2 design comps | Phase B | **Approved 2026-10-20**: Hero version 1, 58% copy column, components approved |
+| M4 Homepage | C4 + C7 | In progress |
 | M5–M9 | C5–C8, Phases D–E | Not started |
 
 ## Decisions recorded (2026-10-20)
+
+- **G2 approved:** Hero A version 1 (title block in the drawing sheet's bottom band); copy column 7/12 (≈58%).
+- **Owner override of Strategy SD-06 on the homepage:** no in-house/partner matrix. H5 shows what the plant does, grouped by stage (converting, printing and finishing, protection, quality checks), with varnish and coating marked "through partners". Whether the Manufacturing & Quality page keeps a matrix is open for M6.
 
 - G2 waived for foundation-only work (M1). Hero and component comps are still required before M4.
 - Tailwind v4 instead of 3.4 (overrides TD-02). Tokens are CSS variables mapped in `@theme`; the default palette and breakpoints are removed so only tokens compile.
@@ -21,6 +25,26 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 - Claim statuses: CONFLICT → verify, EXTERNAL → restricted. RESTRICTED facts are not stored in the repo.
 - Banned strings: scanned in `src/`, `public/` and `package.json`, with a per-file allow-list. Docs, tests and scripts are not scanned.
 - Claim expiry: judged at build time (`CLAIMS_AS_OF` in `build:launch`, plus `check-claims`), because prerendering may not read the clock.
+
+## 2026-10-20 — G2 design comps (`/specimen/home`, dev and preview only)
+
+- Parametric RSC dieline generator (`src/components/illustration/dieline.ts`) and `DielinePlate`: cuts solid, creases dashed 6/4, L/W/H callouts, no sizes claimed. Draw sequence ≈1.2 s, CSS only, once: cut wipe, then creases, callouts and title block.
+- Hero A in two variants for the owner to choose (Design §9 contradicts itself):
+  1. title block in the drawing sheet's bottom band;
+  2. strip at the base of the copy.
+  On mobile both put the strip right after the CTAs. A new e2e test proves H1, both CTAs and three strip cells fit the 390×844 first screen (Roadmap §6).
+- **Hero layout change:** copy 7/12 (≈58%), not ≈55%, so the H1 holds to three lines (Design §6). H1 is 52 px from 1024 px and 64 px from 1440 px (new token `display-md`). The sheet title block stays 2×2 until 1440 px.
+- Components:
+  - FamilyIndex: index rows, stretched link. Only the RSC drawing exists; the others show "Drawing to come" in dev and preview and nothing in production.
+  - ProcessSteps: gated on F-30.
+  - IndustryGrid: gated on F-46, F-27 and F-45.
+  - CapabilityMatrix: real table; production keeps only the confirmed varnish/coating partner row until F-29 is verified.
+  - IsoCertificateCard: gated on F-40.
+  - QuoteBand.
+- New claims: F-27 (product → industry, rows 1–3, CONFIRMED), F-27-allied (VERIFY), F-29 (processes, VERIFY), F-29-varnish (CONFIRMED), F-30 (design support, CONFIRMED), F-46 (top four industries, CONFIRMED).
+- Fixed: the matrix's screen-reader-only labels escaped its scroll container and widened the page at 360 and 390 px.
+- Not built as comps: the H5 manufacturing split, H6 specialised items and H7 trust row. These are assembled from the parts above in M4.
+- Tests: 65 unit, 64 e2e.
 
 ## 2026-10-20 — M3 Quote flow
 
