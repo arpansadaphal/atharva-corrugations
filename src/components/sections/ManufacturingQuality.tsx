@@ -2,9 +2,9 @@ import Link from 'next/link'
 import { Gated } from '@/components/ui/Gated'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { TitleBlock, cell } from '@/components/ui/TitleBlock'
-import { getClaim, getClaimsMode, isRenderable } from '@/lib/claims'
+import { getClaim, getClaimsMode, isRenderable, reviewAttrs } from '@/lib/claims'
 import { cn } from '@/lib/utils'
-import type { ClaimsMode } from '@/types/claims'
+import type { Claim, ClaimsMode } from '@/types/claims'
 
 const boardCells = [
   cell('F-20', 'Board', (ply) => `${ply[0]} to ${ply[ply.length - 1]} ply`),
@@ -15,6 +15,8 @@ const boardCells = [
 interface CapabilityGroup {
   title: string
   items: string[]
+  /** The claim the list comes from, for review markers */
+  source: Claim<unknown>
 }
 
 /**
@@ -30,14 +32,15 @@ export function capabilityGroups(mode: ClaimsMode): CapabilityGroup[] {
   const groups: CapabilityGroup[] = []
   if (isRenderable(processes, mode)) {
     const p = processes.value
-    groups.push({ title: 'Converting', items: p.converting })
+    groups.push({ title: 'Converting', items: p.converting, source: processes })
     groups.push({
       title: 'Printing and finishing',
       items: [...p.printing, ...(isRenderable(varnish, mode) ? [`${varnish.value}, through partners`] : [])],
+      source: processes,
     })
-    groups.push({ title: 'Protection', items: p.protection })
+    groups.push({ title: 'Protection', items: p.protection, source: processes })
   }
-  if (isRenderable(checks, mode)) groups.push({ title: 'Quality checks', items: checks.value })
+  if (isRenderable(checks, mode)) groups.push({ title: 'Quality checks', items: checks.value, source: checks })
   return groups
 }
 
@@ -53,7 +56,7 @@ export function ManufacturingQuality({ mode }: { mode?: ClaimsMode }) {
   const groups = capabilityGroups(m)
 
   return (
-    <section data-surface="dark" className="surface-dark surface-texture">
+    <section id="manufacturing" data-surface="dark" className="surface-dark surface-texture">
       <div className={cn('container-site grid', groups.length > 0 && 'lg:grid-cols-2')}>
         <div className={cn('flex flex-col gap-8 py-[72px] md:py-24 lg:py-[120px] lg:pr-12', groups.length > 0 && 'pb-12 md:pb-12')}>
           <SectionHeader
@@ -94,11 +97,11 @@ export function ManufacturingQuality({ mode }: { mode?: ClaimsMode }) {
               className="absolute top-0 right-0 left-0 border-t border-dashed border-accent-on-dark lg:top-0 lg:right-auto lg:bottom-0 lg:left-0 lg:border-t-0 lg:border-l"
             />
             <h3 className="sr-only">What our plant does</h3>
-            <div className="grid gap-10 md:grid-cols-2">
+            <div className="grid gap-8 md:grid-cols-2 md:gap-10">
               {groups.map((g) => (
-                <div key={g.title} className="flex flex-col gap-3">
+                <div key={g.title} className="flex flex-col gap-3" {...reviewAttrs(g.source, m)}>
                   <h4 className="text-label font-semibold text-on-dark-muted uppercase">{g.title}</h4>
-                  <ul className="flex flex-col gap-2 text-spec text-on-dark-body">
+                  <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-spec text-on-dark-body md:flex md:flex-col">
                     {g.items.map((item) => (
                       <li key={item}>{item}</li>
                     ))}

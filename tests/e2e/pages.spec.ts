@@ -51,6 +51,23 @@ for (const path of ['/industries', '/custom-packaging', '/manufacturing-and-qual
   })
 }
 
+test('home "What we make": every family has a real drawing, no placeholders (audit P0-2)', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByText('Drawing to come')).toHaveCount(0)
+  const rows = page.locator('section').filter({ has: page.getByRole('heading', { name: 'What we make' }) }).locator('li')
+  await expect(rows).toHaveCount(5)
+  for (let i = 0; i < 5; i++) {
+    await expect(rows.nth(i).getByRole('img', { name: /^Illustration/ })).toHaveCount(1)
+  }
+})
+
+test('family page shows the board in section beside the construction table', async ({ page }) => {
+  await page.goto('/products/corrugated-boxes')
+  for (const wall of ['single wall', 'double wall', 'triple wall']) {
+    await expect(page.getByRole('img', { name: new RegExp(`Illustration: ${wall}`) })).toHaveCount(1)
+  }
+})
+
 test('industries: four anchored sections and no compliance wording (Roadmap §6)', async ({ page }) => {
   await page.goto('/industries')
   for (const id of ['white-goods', 'engineering-goods', 'fmcg', 'pharma-healthcare']) await expect(page.locator(`section#${id}`)).toHaveCount(1)
@@ -98,6 +115,12 @@ async function fillContact(page: Page) {
 }
 
 test.describe('contact', () => {
+  test('the quote route states the confirmed reply time (F-16), not hand-typed copy', async ({ page }) => {
+    await page.goto('/contact')
+    await expect(page.getByText('Structured request, reply within 2 working days')).toBeVisible()
+    await expect(page.getByText('Form and email: within 2 working days.')).toBeVisible()
+  })
+
   test('every route works: quote, WhatsApp, tel, mailto; careers line present', async ({ page }) => {
     await page.goto('/contact')
     const routes = page.locator('[data-location="contact-routes"]')
@@ -145,5 +168,38 @@ test.describe('contact', () => {
       const overlap = a && b && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height
       expect(overlap, block).toBeFalsy()
     }
+  })
+})
+
+test.describe('client review mode (preview build)', () => {
+  test('the banner links to a checklist of every unconfirmed fact, each linked to where it appears', async ({ page }) => {
+    await page.goto('/')
+    const banner = page.getByRole('complementary', { name: 'Review copy' })
+    const n = Number((await banner.textContent())?.match(/(\d+) facts? (?:is|are) not yet confirmed/)?.[1])
+    expect(n).toBeGreaterThan(0)
+    await banner.getByRole('link', { name: 'Review checklist' }).click()
+    await expect(page).toHaveURL(/\/review$/)
+    await expect(page.locator('li[id^="claim-"]')).toHaveCount(n)
+    await page.locator('#claim-F-40').getByRole('link', { name: 'Home, Certificates and ratings' }).click()
+    await expect(page).toHaveURL(/\/#certificates$/)
+    await expect(page.locator('[data-review-claim="F-40"]').first()).toBeAttached()
+  })
+
+  test('unconfirmed facts are outlined; the outlines can be hidden and the choice is kept', async ({ page }) => {
+    await page.goto('/')
+    const marked = page.locator('[data-review-claim]:not(.contents), [data-review-claim].contents > *').first()
+    await expect(marked).toHaveCSS('outline-style', 'dashed')
+    await page.getByRole('button', { name: 'Hide outlines' }).click()
+    await expect(marked).toHaveCSS('outline-style', 'none')
+    await page.reload()
+    await expect(page.locator('html')).toHaveClass(/review-marks-off/)
+    await page.getByRole('button', { name: 'Show outlines' }).click()
+    await expect(marked).toHaveCSS('outline-style', 'dashed')
+  })
+
+  test('/review passes axe', async ({ page }) => {
+    await page.goto('/review')
+    const { violations } = await new AxeBuilder({ page }).analyze()
+    expect(violations.filter((v) => v.impact === 'serious' || v.impact === 'critical')).toEqual([])
   })
 })

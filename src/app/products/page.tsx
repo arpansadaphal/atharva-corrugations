@@ -10,8 +10,8 @@ import { SectionHeader } from '@/components/ui/SectionHeader'
 import { familyEvidence } from '@/data/family-evidence'
 import { quoteHref } from '@/data/navigation'
 import { families, type Family } from '@/data/products'
-import { gatedValue, getClaim, isRenderable } from '@/lib/claims'
-import { evaluateMcb } from '@/lib/mcb'
+import { gatedValue, getClaim, isPublishable, isRenderable, reviewAttrs } from '@/lib/claims'
+import { applicationsClaim, evaluateMcb } from '@/lib/mcb'
 import { contextForPath, whatsappUrl } from '@/lib/whatsapp'
 
 export const metadata: Metadata = {
@@ -95,7 +95,7 @@ function FamilySection({ family: f }: { family: Family }) {
             <p className="measure text-lead">{f.summary}</p>
           </Gated>
           {mcb.applications.length > 0 && (
-            <p className="text-spec">
+            <p className="text-spec" {...reviewAttrs(applicationsClaim(f)!)}>
               <span className="font-semibold text-ink">Used for: </span>
               {mcb.applications.join(', ')}
             </p>
@@ -159,6 +159,12 @@ function ComparisonTable() {
       use: evaluateMcb(f).applications.join(', '),
       formats: formatsOk ? f.formats.map((x) => x.name).join(', ') : '',
       board: board.map((s) => `${s.label}: ${s.render(getClaim(s.claim).value as never)}`).join('; '),
+      // review markers for cells built from unconfirmed claims
+      review: {
+        use: applicationsClaim(f) ? reviewAttrs(applicationsClaim(f)!) : {},
+        formats: reviewAttrs(getClaim(f.formatsClaim)),
+        board: board.map((s) => getClaim(s.claim)).find((c) => !isPublishable(c)) ? { 'data-review-claim': board.map((s) => s.claim).join(' ') } : {},
+      } as Record<'use' | 'formats' | 'board', { 'data-review-claim'?: string }>,
     }
   })
   const columns = (
@@ -198,7 +204,7 @@ function ComparisonTable() {
                     </a>
                   </th>
                   {columns.map((c) => (
-                    <td key={c.key} className="tabular py-4 pr-6">
+                    <td key={c.key} className="tabular py-4 pr-6" {...(r[c.key] ? r.review[c.key] : {})}>
                       {r[c.key]}
                     </td>
                   ))}

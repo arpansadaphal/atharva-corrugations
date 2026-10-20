@@ -30,6 +30,35 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 - Banned strings: scanned in `src/`, `public/` and `package.json`, with a per-file allow-list. Docs, tests and scripts are not scanned.
 - Claim expiry: judged at build time (`CLAIMS_AS_OF` in `build:launch`, plus `check-claims`), because prerendering may not read the clock.
 
+## 2026-10-21: Review polish (from `FRONTEND_QUALITY_AUDIT.md`)
+
+- **Products dropdown:** hover and click no longer conflict. Hover opens it, a click pins it open, a second click closes it. Touch taps toggle it. Escape, focus leaving and an outside click still close it.
+- **Drawings:** the four "Drawing to come" placeholders are replaced by real drawings in the dieline language, in `src/components/illustration/drawings.tsx`:
+  - die-cut, heavy-duty, partition, angle corner and honeycomb;
+  - single, double and triple-wall board in section on the family page.
+
+  The paper-core drawing still waits for a sample (Design §7.4).
+- **Client review mode (preview and dev only):**
+  - Unconfirmed facts are outlined with a kraft dashed line. The banner gives the count, links to the checklist and can hide the outlines.
+  - `/review` lists every open fact with its value, what is needed and links to where it appears. The facts come from the claims registry; `src/data/claim-locations.ts` holds only locations, and a unit test fails if an open fact has no entry.
+  - `/review` returns a 404 in production, and production HTML carries no review markup (checked on the launch build).
+- **Hero:**
+  - The drawing sheet hugs the dieline and the 4:3 box is gone.
+  - The sheet's facts stay 2×2 at every width.
+  - The facts no longer fade in.
+  - The drawing is capped at 34 rem below 1024 px.
+- **Floating WhatsApp:** below 768 px it appears after half a screen of scrolling and hides while the footer is in view. Desktop is unchanged.
+- **Mobile scanning:** each family row puts a small drawing beside its name. Capability and quality lists are two columns on phones. The homepage is 700 px shorter at 390 px.
+- **Fixes:**
+  - About lists the plant only; the duplicate Group office is removed.
+  - Contact and the quote metadata take the reply time from F-16.
+  - `/specimen` is now `next dev` only.
+  - The header logo link's name matches its visible text (WCAG 2.5.3).
+  - `Gated` puts the review marker on a single child element, so lists keep valid children.
+- **Test environment:**
+  - The CSP's `upgrade-insecure-requests` is sent only on Vercel (HTTPS) builds. WebKit applied it to `http://localhost`, so no script loaded in the WebKit and mobile-Safari runs.
+  - Form tests wait for hydration, because a `<select>` choice made before React attaches is reset.
+
 ## 2026-10-20 — Fixes from the hosted client review
 
 - **Page stopped scrolling after using the navbar.**

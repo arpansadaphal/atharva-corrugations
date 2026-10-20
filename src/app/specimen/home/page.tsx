@@ -31,7 +31,8 @@ function CompLabel({ id, children }: { id: string; children: React.ReactNode }) 
  * components in code, for owner approval before the homepage is assembled.
  */
 export default function HomeComponentsPage() {
-  if (getClaimsMode() === 'production') notFound()
+  // internal design reference: `next dev` only, never on a review or live build
+  if (getClaimsMode() !== 'development') notFound()
   const phones = gatedValue('F-12')
   const wa = phones ? whatsappUrl(phones.whatsapp, contextForPath('/')) : undefined
 

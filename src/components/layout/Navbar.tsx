@@ -77,7 +77,7 @@ export function Navbar({ groupName, whatsappNumber, productLinks }: NavbarProps)
       )}
     >
       <div className="container-site flex h-[72px] items-center justify-between gap-4 xl:gap-6">
-        <Link href="/" className="flex shrink-0 flex-col" aria-label="Atharva Corrugations, home">
+        <Link href="/" className="flex shrink-0 flex-col">
           <span className="text-ui font-semibold text-ink">Atharva Corrugations</span>
           {groupName && <span className="text-label text-muted">An {groupName} company</span>}
         </Link>
@@ -159,38 +159,56 @@ function NavItem({ href, active, children }: { href: string; active: boolean; ch
  * button, so Enter and Space open it for keyboard users (Sitemap §3);
  * Escape closes it and returns focus; leaving it by Tab or click closes it.
  */
+/** How long the panel stays after a mouse leaves it, so a diagonal move to a link does not close it */
+const HOVER_CLOSE_MS = 200
+
 function ProductsMenu({ label, links, active }: { label: string; links: NavLink[]; active: boolean }) {
-  const [open, setOpen] = useState(false)
+  // 'hover': opened by a mouse resting on it, closes when the mouse leaves.
+  // 'pinned': opened by click, tap, Enter or Space, stays until dismissed.
+  // A click while hover-open pins it rather than closing it: the defect
+  // found in the frontend audit (hover opened it, the click toggled it shut).
+  const [mode, setMode] = useState<null | 'hover' | 'pinned'>(null)
+  const open = mode !== null
   const pathname = usePathname()
   const panelId = useId()
   const root = useRef<HTMLDivElement>(null)
   const trigger = useRef<HTMLButtonElement>(null)
+  const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
 
-  // Hover opens it for pointer users; Escape and focus leaving the group
-  // close it. Delegated listeners on the wrapper: the controls themselves
-  // stay a native button and links.
+  // Pointer hover (mouse only: touch taps also fire enter events), Escape
+  // and focus leaving the group. Delegated listeners on the wrapper: the
+  // controls themselves stay a native button and links.
   useEffect(() => {
     const el = root.current
     if (!el) return
-    const onEnter = () => setOpen(true)
-    const onLeave = () => setOpen(false)
+    const onEnter = (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse') return
+      clearTimeout(closeTimer.current)
+      setMode((m) => m ?? 'hover')
+    }
+    const onLeave = (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse') return
+      clearTimeout(closeTimer.current)
+      closeTimer.current = setTimeout(() => setMode((m) => (m === 'hover' ? null : m)), HOVER_CLOSE_MS)
+    }
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return
-      setOpen((wasOpen) => {
-        if (wasOpen) trigger.current?.focus()
-        return false
+      setMode((m) => {
+        if (m) trigger.current?.focus()
+        return null
       })
     }
     const onFocusOut = (e: FocusEvent) => {
-      if (!el.contains(e.relatedTarget as Node)) setOpen(false)
+      if (!el.contains(e.relatedTarget as Node)) setMode(null)
     }
-    el.addEventListener('mouseenter', onEnter)
-    el.addEventListener('mouseleave', onLeave)
+    el.addEventListener('pointerenter', onEnter)
+    el.addEventListener('pointerleave', onLeave)
     el.addEventListener('keydown', onKey)
     el.addEventListener('focusout', onFocusOut)
     return () => {
-      el.removeEventListener('mouseenter', onEnter)
-      el.removeEventListener('mouseleave', onLeave)
+      clearTimeout(closeTimer.current)
+      el.removeEventListener('pointerenter', onEnter)
+      el.removeEventListener('pointerleave', onLeave)
       el.removeEventListener('keydown', onKey)
       el.removeEventListener('focusout', onFocusOut)
     }
@@ -199,7 +217,7 @@ function ProductsMenu({ label, links, active }: { label: string; links: NavLink[
   useEffect(() => {
     if (!open) return
     const onPointer = (e: PointerEvent) => {
-      if (!root.current?.contains(e.target as Node)) setOpen(false)
+      if (!root.current?.contains(e.target as Node)) setMode(null)
     }
     document.addEventListener('pointerdown', onPointer)
     return () => document.removeEventListener('pointerdown', onPointer)
@@ -212,7 +230,10 @@ function ProductsMenu({ label, links, active }: { label: string; links: NavLink[
         type="button"
         aria-expanded={open}
         aria-controls={panelId}
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          clearTimeout(closeTimer.current)
+          setMode((m) => (m === 'pinned' ? null : 'pinned'))
+        }}
         data-active={active || undefined}
         className={cn(
           'nav-underline inline-flex items-center gap-1 py-2 text-ui font-medium whitespace-nowrap',
@@ -237,7 +258,7 @@ function ProductsMenu({ label, links, active }: { label: string; links: NavLink[
               <Link
                 href={l.href}
                 aria-current={pathname === l.href ? 'page' : undefined}
-                onClick={() => setOpen(false)}
+                onClick={() => setMode(null)}
                 className="block px-5 py-2.5 text-ui text-ink hover:bg-paper-50 hover:text-accent"
               >
                 {l.label}

@@ -6,7 +6,7 @@ import type { Claim } from '@/types/claims'
 
 /** Section surfaces in order, with the footer (always dark) appended */
 function surfaces(html: string) {
-  return [...html.matchAll(/<section data-surface="(dark|light)"/g)].map((m) => m[1]).concat('dark')
+  return [...html.matchAll(/<section(?: id="[^"]*")? data-surface="(dark|light)"/g)].map((m) => m[1]).concat('dark')
 }
 
 /** Sitemap §6.1: never more than two dark or three light sections in a row */

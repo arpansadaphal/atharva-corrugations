@@ -1,5 +1,5 @@
 import type { TitleBlockCell } from '@/components/ui/TitleBlock'
-import { getClaim, getClaimsMode, isRenderable } from '@/lib/claims'
+import { getClaim, getClaimsMode, isRenderable, reviewAttrs } from '@/lib/claims'
 import type { ClaimsMode } from '@/types/claims'
 
 /**
@@ -27,7 +27,7 @@ export function SpecTable({
       <caption className="sr-only">{caption}</caption>
       <tbody className={dark ? 'border-t border-line-dark' : 'border-t border-line'}>
         {rows.map((s) => (
-          <tr key={`${s.claim}-${s.label}`} className={dark ? 'border-b border-line-dark' : 'border-b border-line'}>
+          <tr key={`${s.claim}-${s.label}`} className={dark ? 'border-b border-line-dark' : 'border-b border-line'} {...reviewAttrs(getClaim(s.claim), m)}>
             <th scope="row" className={`w-40 py-3 pr-6 align-top text-label font-semibold uppercase ${dark ? 'text-on-dark-muted' : 'text-muted'}`}>
               {s.label}
             </th>

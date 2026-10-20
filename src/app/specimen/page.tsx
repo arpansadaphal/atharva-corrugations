@@ -53,7 +53,8 @@ const MODES: ClaimsMode[] = ['development', 'preview', 'production']
  * stands in for the Phase B token sheet (approved G2 waiver for M1).
  */
 export default function SpecimenPage() {
-  if (getClaimsMode() === 'production') notFound()
+  // internal design reference: `next dev` only, never on a review or live build
+  if (getClaimsMode() !== 'development') notFound()
 
   return (
     <>

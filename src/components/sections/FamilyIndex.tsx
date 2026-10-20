@@ -1,9 +1,8 @@
 import Link from 'next/link'
-import { DielinePlate } from '@/components/illustration/DielinePlate'
+import { Illustration } from '@/components/illustration/FormatDrawing'
 import { Gated } from '@/components/ui/Gated'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { families, type Family } from '@/data/products'
-import { getClaimsMode } from '@/lib/claims'
 import { familyHref } from '@/lib/mcb'
 
 /**
@@ -13,7 +12,7 @@ import { familyHref } from '@/lib/mcb'
  */
 export function FamilyIndex() {
   return (
-    <section data-surface="light" className="section-padding bg-paper">
+    <section id="what-we-make" data-surface="light" className="section-padding bg-paper">
       <div className="container-site flex flex-col gap-10">
         <SectionHeader eyebrow="Products" headline="What we make" />
         <ul className="border-t border-line">
@@ -39,9 +38,15 @@ function FamilyIndexRow({ family: f }: { family: Family }) {
 
   return (
     <li className="group relative border-b border-line transition-colors duration-200 ease-brand hover:bg-paper-50">
-      <div className="grid grid-cols-1 gap-4 py-6 md:grid-cols-12 md:items-center md:gap-6 md:px-4">
-        <div className="md:col-span-3">
-          <FamilyDrawing slug={f.slug} />
+      {/* On a phone the drawing sits small beside the name, so each row scans
+          in about half the height; from 768 px the index columns apply */}
+      <div className="grid grid-cols-[5rem_1fr] items-start gap-4 py-6 md:grid-cols-12 md:items-center md:gap-6 md:px-4">
+        {/* same height for every drawing so the rows line up; a family's drawing
+            shows only when its formats are confirmed (protective: F-27-allied) */}
+        <div className="flex h-14 items-center md:col-span-3 md:h-28 md:justify-center">
+          <Gated claim={f.formatsClaim}>
+            <Illustration id={f.indexDrawing} className="h-full w-auto max-w-full" />
+          </Gated>
         </div>
         <div className="flex flex-col gap-2 md:col-span-7">
           <h3 className="text-h3 font-medium text-ink">
@@ -69,22 +74,5 @@ function FamilyIndexRow({ family: f }: { family: Family }) {
         </div>
       </div>
     </li>
-  )
-}
-
-/**
- * Family line drawings come from the illustration set (Design §7.4, C7).
- * Only the RSC exists so far; the others show a labelled frame in
- * development and preview, and nothing in production.
- */
-function FamilyDrawing({ slug }: { slug: Family['slug'] }) {
-  if (slug === 'corrugated-boxes') {
-    return <DielinePlate theme="light" callouts={false} className="max-h-28" />
-  }
-  if (getClaimsMode() === 'production') return null
-  return (
-    <div className="flex aspect-[2/1] max-h-28 items-center justify-center border border-dashed border-line-ui text-spec text-muted">
-      Drawing to come
-    </div>
   )
 }

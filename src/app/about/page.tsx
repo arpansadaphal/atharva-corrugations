@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { Gated } from '@/components/ui/Gated'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { group } from '@/group/group'
-import { gatedValue, getClaimsMode, isRenderable } from '@/lib/claims'
+import { gatedValue, getClaim, getClaimsMode, isRenderable, reviewAttrs } from '@/lib/claims'
 import { formatPhone, telHref } from '@/lib/format'
 
 export const metadata: Metadata = {
@@ -25,11 +25,12 @@ export default function AboutPage() {
   const founders = group['F-09']
   const since = gatedValue('F-03')
   const phones = gatedValue('F-12')
-  const milestones = [
-    since && { year: since, text: 'Operations started at our Ranjangaon MIDC plant.' },
-    gatedValue('F-52-tape'),
-    gatedValue('F-52-expansion'),
-  ].filter(Boolean) as { year: number; text: string }[]
+  // 2014 is confirmed (F-03); the later milestones are their own claims
+  const later = (['F-52-tape', 'F-52-expansion'] as const).flatMap((id) => {
+    const c = getClaim(id)
+    return isRenderable(c, mode) ? [{ ...c.value, review: reviewAttrs(c, mode) }] : []
+  })
+  const milestones = [...(since ? [{ year: since, text: 'Operations started at our Ranjangaon MIDC plant.', review: {} }] : []), ...later]
 
   return (
     <>
@@ -91,9 +92,9 @@ export default function AboutPage() {
       <section data-surface="light" className="section-padding bg-paper">
         <div className="container-site grid gap-12 lg:grid-cols-2">
           {isRenderable(founders, mode) && (
-            <div className="flex flex-col gap-6">
+            <div id="founders" className="flex flex-col gap-6">
               <SectionHeader eyebrow="Founders" headline="Who founded the company" />
-              <ul className="flex flex-col border-t border-line">
+              <ul className="flex flex-col border-t border-line" {...reviewAttrs(founders, mode)}>
                 {founders.value.map((name) => (
                   <li key={name} className="border-b border-line py-3 text-copy text-ink">
                     {name}
@@ -103,11 +104,11 @@ export default function AboutPage() {
             </div>
           )}
           {milestones.length > 0 && (
-            <div className="flex flex-col gap-6">
+            <div id="milestones" className="flex flex-col gap-6">
               <SectionHeader eyebrow="Milestones" headline="Our timeline" />
               <ol className="flex flex-col border-t border-line">
                 {milestones.map((m) => (
-                  <li key={m.year} className="grid grid-cols-[5rem_1fr] gap-4 border-b border-line py-3">
+                  <li key={m.year} className="grid grid-cols-[5rem_1fr] gap-4 border-b border-line py-3" {...m.review}>
                     <span className="tabular font-semibold text-ink">{m.year}</span>
                     <span>{m.text}</span>
                   </li>
@@ -118,8 +119,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* A6 Locations */}
-      <section data-surface="light" className="section-padding bg-paper-50">
+      {/* A6 Locations: the plant; the Group office is in the Atharva Group section above */}
+      <section id="locations" data-surface="light" className="section-padding bg-paper-50">
         <div className="container-site grid gap-12 md:grid-cols-2">
           <Gated claim="F-05" as="div">
             {(a) => (
@@ -142,16 +143,6 @@ export default function AboutPage() {
               </div>
             )}
           </Gated>
-          <div className="flex flex-col gap-2">
-            <h2 className="text-label font-semibold text-muted uppercase">Group office</h2>
-            <address className="not-italic">
-              {office.line1}
-              <br />
-              {office.line2}
-              <br />
-              {office.city}, {office.region} {office.postalCode}
-            </address>
-          </div>
         </div>
       </section>
 

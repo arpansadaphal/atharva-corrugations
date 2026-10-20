@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { FormatDrawing } from '@/components/illustration/FormatDrawing'
+import { FluteSection } from '@/components/illustration/drawings'
 import { InternalDimensions } from '@/components/illustration/InternalDimensions'
 import { QuoteBand } from '@/components/sections/QuoteBand'
 import { SpecTable } from '@/components/sections/SpecTable'
@@ -120,11 +121,27 @@ export default async function FamilyPage({ params }: PageProps<'/products/[famil
       </section>
 
       {/* F3 Construction and board; F4 Printing and finishing */}
-      <section data-surface="dark" className="surface-dark surface-texture section-padding">
+      <section id="construction" data-surface="dark" className="surface-dark surface-texture section-padding">
         <div className="container-site grid gap-12 lg:grid-cols-2">
           <div className="flex flex-col gap-6">
             <SectionHeader eyebrow="Construction" headline="Board and construction" theme="dark" />
             <SpecTable specs={ev.specs} caption={`${f.name}: construction and board`} theme="dark" />
+            {/* Board builds in section (Design §7.4 item 11): single and double wall
+                follow the confirmed 3 and 5 ply (F-27); triple wall needs F-20 */}
+            {f.formatsClaim === 'F-18' && (
+              <Gated claim="F-27" as="div">
+                <div className="flex flex-col gap-2">
+                  <div className="grid max-w-2xl grid-cols-3 items-end gap-6">
+                    <FluteSection wall="single" theme="dark" />
+                    <FluteSection wall="double" theme="dark" />
+                    <Gated claim="F-20" as="div">
+                      <FluteSection wall="triple" theme="dark" />
+                    </Gated>
+                  </div>
+                  <p className="text-spec text-on-dark-muted">Illustration: board in section, liners and fluted layers.</p>
+                </div>
+              </Gated>
+            )}
             <Gated claim="F-21">
               <Gated claim="F-18-copy">
                 <details className="max-w-2xl border-y border-line-dark py-3">

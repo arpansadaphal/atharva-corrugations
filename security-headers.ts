@@ -12,6 +12,8 @@
 
 interface Env {
   NODE_ENV?: string
+  /** Set by Vercel on every build (preview and production), all served over HTTPS */
+  VERCEL?: string
   NEXT_PUBLIC_GA_ID?: string
   NEXT_PUBLIC_TURNSTILE_SITE_KEY?: string
 }
@@ -44,7 +46,11 @@ export function contentSecurityPolicy(env: Env): string {
     'frame-ancestors': ["'none'"],
   }
   const policy = Object.entries(directives).map(([k, v]) => `${k} ${v.join(' ')}`)
-  if (!dev) policy.push('upgrade-insecure-requests')
+  // Only where the site is served over HTTPS (Vercel). WebKit applies it even
+  // to http://localhost, so on a local or CI test server every script would be
+  // upgraded to https and fail to load. Every resource is same-origin, so the
+  // directive is a safety net rather than a dependency
+  if (!dev && env.VERCEL) policy.push('upgrade-insecure-requests')
   return policy.join('; ')
 }
 

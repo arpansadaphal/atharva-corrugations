@@ -11,8 +11,7 @@ const PAGES = [
   '/manufacturing-and-quality',
   '/about',
   '/contact',
-  '/specimen',
-  '/specimen/home',
+  '/review',
   '/request-quote',
   '/no-such-page',
 ]
@@ -46,6 +45,41 @@ test.describe('accessibility', () => {
 
 test.describe('desktop navigation', () => {
   test.use({ viewport: { width: 1440, height: 900 } })
+
+  test('mouse: hover opens, the click keeps it open, a second click closes (audit defect P0-1)', async ({ page }) => {
+    await page.goto('/')
+    const trigger = page.getByRole('button', { name: 'Products' })
+    await trigger.hover()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    await trigger.click()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    // pinned: moving the mouse away does not close it
+    await page.mouse.move(700, 600)
+    await page.waitForTimeout(400)
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    await trigger.click()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  test('mouse: hover-only opening closes shortly after the pointer leaves; the panel link is reachable', async ({ page }) => {
+    await page.goto('/')
+    const trigger = page.getByRole('button', { name: 'Products' })
+    await trigger.hover()
+    const link = page.locator('header').getByRole('link', { name: 'Die-cut boxes' })
+    await link.hover() // moving down into the panel keeps it open
+    await expect(link).toBeVisible()
+    await page.mouse.move(700, 700)
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  test('mouse: a click outside closes a pinned menu', async ({ page }) => {
+    await page.goto('/')
+    const trigger = page.getByRole('button', { name: 'Products' })
+    await trigger.click()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    await page.mouse.click(700, 600)
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
 
   test('Products dropdown opens with Enter and Space, closes with Escape and returns focus', async ({ page }) => {
     await page.goto('/')
@@ -151,6 +185,12 @@ test.describe('floating WhatsApp and 404', () => {
     expect(fg).toBe('rgb(15, 23, 42)')
   })
 
+  test('the design specimen pages are dev-only: 404 on a review build', async ({ page }) => {
+    for (const path of ['/specimen', '/specimen/home']) {
+      expect((await page.goto(path))?.status(), path).toBe(404)
+    }
+  })
+
   test('unknown route returns a branded 404 with recovery links', async ({ page }) => {
     const res = await page.goto('/no-such-page')
     expect(res?.status()).toBe(404)
@@ -212,4 +252,18 @@ test.describe('header at desktop widths', () => {
       expect(box!.height).toBeLessThanOrEqual(52)
     })
   }
+})
+
+test.describe('touch on a wide screen (tablet landscape, touch laptop)', () => {
+  test.use({ viewport: { width: 1280, height: 800 }, hasTouch: true })
+
+  test('tap opens the Products menu, a second tap closes it', async ({ page }) => {
+    await page.goto('/')
+    const trigger = page.getByRole('button', { name: 'Products' })
+    await trigger.tap()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    await expect(page.locator('header').getByRole('link', { name: 'Die-cut boxes' })).toBeVisible()
+    await trigger.tap()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
 })

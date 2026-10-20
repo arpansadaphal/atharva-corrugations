@@ -1,20 +1,32 @@
-import { getClaimsMode, unverifiedCount } from '@/lib/claims'
+import Link from 'next/link'
+import { isReviewMode, unverifiedCount } from '@/lib/claims'
+import { ReviewMarksToggle } from './ReviewMarksToggle'
 
 /**
- * Staging only (Technical plan §4.3): tells the client reviewer how many
- * registry claims are still unverified and will be removed at launch.
+ * Client review banner (preview and development builds; never production,
+ * Technical plan §4.3). Says how many facts await confirmation, how they are
+ * marked on the page, and links to the review checklist.
  */
 export function PreviewBanner() {
-  if (getClaimsMode() !== 'preview') return null
+  if (!isReviewMode()) return null
   const n = unverifiedCount()
-  if (n === 0) return null
 
   return (
-    <div role="status" className="bg-kraft-200 text-ink">
-      <p className="container-site py-2 text-spec">
-        Preview: {n} {n === 1 ? 'claim in the registry is' : 'claims in the registry are'} unverified. Any shown
-        here will be removed at launch unless evidence arrives.
-      </p>
-    </div>
+    <aside aria-label="Review copy" className="bg-kraft-200 text-ink">
+      <div className="container-site flex flex-col gap-1 py-2 text-spec md:flex-row md:items-center md:justify-between md:gap-6">
+        <p>
+          <span className="font-semibold">Review copy.</span>{' '}
+          {n > 0
+            ? `${n} ${n === 1 ? 'fact is' : 'facts are'} not yet confirmed. They are outlined with a dashed line and stay off the live site until confirmed.`
+            : 'Every fact on this site is confirmed.'}
+        </p>
+        <p className="flex shrink-0 items-center gap-4">
+          <Link href="/review" className="min-h-11 content-center font-semibold underline underline-offset-4">
+            Review checklist
+          </Link>
+          {n > 0 && <ReviewMarksToggle />}
+        </p>
+      </div>
+    </aside>
   )
 }

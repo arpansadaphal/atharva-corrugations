@@ -14,7 +14,7 @@ export function TrustRow({ mode }: { mode?: ClaimsMode }) {
   if (!any) return null
 
   return (
-    <section data-surface="light" className="section-padding bg-paper-50">
+    <section id="certificates" data-surface="light" className="section-padding bg-paper-50">
       <div className="container-site flex flex-col gap-8">
         <h2 className="text-label font-semibold text-muted uppercase">Certificates and ratings</h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

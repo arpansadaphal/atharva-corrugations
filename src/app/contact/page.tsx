@@ -29,7 +29,12 @@ export default function ContactPage() {
   const office = group['F-08'].value
 
   const routes = [
-    { label: 'Request a quote', detail: 'Structured request, reply within 2 working days', href: quoteHref },
+    {
+      label: 'Request a quote',
+      // reply time from the claims registry (F-16), never typed here
+      detail: c.replyPromise ? `Structured request, reply within ${c.replyPromise}` : 'Structured request',
+      href: quoteHref,
+    },
     waHref && { label: 'WhatsApp', detail: c.whatsappDisplay, href: waHref, external: true },
     c.phoneDigits && { label: 'Call', detail: c.phoneDisplay, href: telHref(c.phoneDigits) },
     c.salesEmail && { label: 'Email', detail: c.salesEmail, href: `mailto:${c.salesEmail}` },
@@ -81,7 +86,7 @@ export default function ContactPage() {
             )}
           </div>
 
-          <aside aria-label="Contact details" className="flex flex-col gap-8 lg:col-span-5 lg:border-l lg:border-line lg:pl-12">
+          <aside id="details" aria-label="Contact details" className="flex flex-col gap-8 lg:col-span-5 lg:border-l lg:border-line lg:pl-12">
             <div className="flex flex-col gap-2">
               <h2 className="text-label font-semibold text-muted uppercase">Reply times</h2>
               <p>WhatsApp: during business hours.</p>

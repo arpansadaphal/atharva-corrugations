@@ -17,6 +17,9 @@ export const heroStripCells = [
   cell('F-40', 'Certified', (iso) => iso.standard),
 ]
 
+/** Illustrative proportions only (not a product spec): a squarer carton fills the drawing sheet without letterboxing */
+const HERO_BOX = { length: 300, width: 220, height: 340 }
+
 interface HeroAProps {
   whatsappHref?: string
   /**
@@ -37,11 +40,11 @@ interface HeroAProps {
  */
 export function HeroA({ whatsappHref, strip = 'plate', mode, headingLevel: Heading = 'h1' }: HeroAProps) {
   const titleBlock = (size: 'md' | 'sm') => (
-    <TitleBlock cells={heroStripCells} min={3} theme="dark" size={size} mode={mode} className="hero-strip-animate" />
+    <TitleBlock cells={heroStripCells} min={3} theme="dark" size={size} mode={mode} />
   )
 
   return (
-    <section data-surface="dark" className="surface-dark surface-texture relative overflow-hidden">
+    <section id="hero" data-surface="dark" className="surface-dark surface-texture relative overflow-hidden">
       <div className="container-site grid items-center gap-10 py-12 md:py-20 lg:grid-cols-12 lg:gap-12 lg:py-24">
         <div className="flex flex-col gap-6 lg:col-span-7">
           <p className="flex items-center gap-3">
@@ -80,9 +83,11 @@ export function HeroA({ whatsappHref, strip = 'plate', mode, headingLevel: Headi
 
         {/* A drawing sheet: the dieline above, and in variant 1 the title block
             along the bottom edge where a real drawing keeps it */}
-        <figure className={cn('lg:col-span-5', strip === 'plate' && 'lg:border lg:border-line-dark')}>
-          <div className={cn('aspect-[4/3]', strip === 'plate' && 'lg:p-4')}>
-            <DielinePlate animate className="h-full w-full" />
+        {/* Below 1024 px the drawing follows the copy at a capped width, so it
+            reads as an illustration rather than filling a tablet screen */}
+        <figure className={cn('mx-auto w-full max-w-[34rem] lg:col-span-5 lg:max-w-none', strip === 'plate' && 'lg:border lg:border-line-dark')}>
+          <div className={cn(strip === 'plate' && 'lg:px-4 lg:py-6')}>
+            <DielinePlate box={HERO_BOX} animate />
           </div>
           {strip === 'plate' && <div className="hidden border-t border-line-dark px-4 lg:block">{titleBlock('sm')}</div>}
           <figcaption className="sr-only">Illustration of a regular slotted carton dieline</figcaption>

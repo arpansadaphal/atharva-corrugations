@@ -68,6 +68,20 @@ export function isRenderable(c: Claim<unknown>, mode: ClaimsMode = getClaimsMode
   return true
 }
 
+/**
+ * Review markers (client review, preview and development builds only): a
+ * shown fact that is not yet confirmed carries `data-review-claim`, which
+ * globals.css outlines and the /review checklist explains. Production never
+ * gets the attribute, because unconfirmed facts do not render there at all.
+ */
+export function reviewAttrs(c: Claim<unknown>, mode: ClaimsMode = getClaimsMode()): { 'data-review-claim'?: string } {
+  return mode !== 'production' && !isPublishable(c) && isRenderable(c, mode) ? { 'data-review-claim': c.id } : {}
+}
+
+export function isReviewMode(mode: ClaimsMode = getClaimsMode()): boolean {
+  return mode !== 'production'
+}
+
 export function getClaim<K extends ClaimId>(id: K): (typeof claims)[K] {
   return claims[id]
 }

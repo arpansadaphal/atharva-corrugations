@@ -3,7 +3,20 @@ import { expect, test, type Page } from '@playwright/test'
 
 const REF = /ACQ-\d{6}-[0-9A-HJKMNP-TV-Z]{4}/
 
+/**
+ * Wait for React to take over the form. A choice made in a <select> before
+ * hydration is reset to its default when React attaches, and WebKit hydrates
+ * late enough for the tests to hit that window.
+ */
+async function hydrated(page: Page) {
+  await page.waitForFunction(() => {
+    const form = document.querySelector('form')
+    return !!form && Object.keys(form).some((k) => k.startsWith('__reactProps'))
+  })
+}
+
 async function fillRequired(page: Page) {
+  await hydrated(page)
   await page.getByLabel('Packaging type').selectOption('die-cut-boxes')
   await page.getByLabel('What are you packing?').fill('Compressor housing, about 40 kg')
   await page.getByLabel('Quantity per order').fill('500')

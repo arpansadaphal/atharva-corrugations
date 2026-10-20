@@ -39,6 +39,8 @@ test('the quote form still submits under the CSP', async ({ page }) => {
   await watchCsp(page)
   await page.route('/api/rfq', (r) => r.fulfill({ json: { ok: true, reference: 'ACQ-261020-TEST' } }))
   await page.goto('/request-quote')
+  // a <select> choice made before hydration is reset when React attaches (see quote.spec.ts)
+  await page.waitForFunction(() => Object.keys(document.querySelector('form') ?? {}).some((k) => k.startsWith('__reactProps')))
   await page.getByLabel('Packaging type').selectOption('corrugated-boxes')
   await page.getByLabel('What are you packing?').fill('Compressor housing, about 40 kg')
   await page.getByLabel('Quantity per order').fill('500')

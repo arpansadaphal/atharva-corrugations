@@ -115,7 +115,7 @@ export default function CustomPackagingPage() {
               </div>
               <Gated claim="F-30-routine" as="div">
                 {(outputs) => (
-                  <div className="flex flex-col gap-6">
+                  <div id="outputs" className="flex flex-col gap-6">
                     <SectionHeader eyebrow="Outputs" headline="What you receive" />
                     <ul className="flex flex-col border-t border-line">
                       {outputs.map((o) => (
@@ -133,7 +133,7 @@ export default function CustomPackagingPage() {
           {/* C5 Testing support (named practices, gated); C6 Tooling (policy, gated) */}
           <Gated claim="F-38">
             {(practices) => (
-              <section data-surface="light" className="section-padding bg-paper">
+              <section id="testing" data-surface="light" className="section-padding bg-paper">
                 <div className="container-site grid gap-12 lg:grid-cols-2">
                   <div className="flex flex-col gap-6">
                     <SectionHeader

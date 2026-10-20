@@ -41,7 +41,7 @@ export function Footer() {
   const groupOffice = group['F-08']
 
   return (
-    <footer data-surface="dark" className="surface-dark">
+    <footer id="site-footer" data-surface="dark" className="surface-dark">
       <div className="container-site grid grid-cols-1 gap-x-8 gap-y-6 pt-16 pb-10 md:grid-cols-2 md:gap-y-12 lg:grid-cols-4">
         <StaticColumn title="Atharva Corrugations">
           <div className="flex flex-col gap-4">

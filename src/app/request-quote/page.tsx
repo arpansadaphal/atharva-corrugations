@@ -5,13 +5,17 @@ import { InternalDimensions } from '@/components/illustration/InternalDimensions
 import { Button } from '@/components/ui/Button'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { privacyHref } from '@/data/navigation'
+import { gatedValue } from '@/lib/claims'
 import { rfqConfig } from '@/lib/rfq-config'
 import { telHref } from '@/lib/format'
 import { contextForPath, whatsappUrl } from '@/lib/whatsapp'
 
+/** Reply time from the claims registry (F-16); dropped from the description if it is ever unconfirmed */
+const replyDays = gatedValue('F-16')
+
 export const metadata: Metadata = {
   title: 'Request a Quote',
-  description: 'Tell us what you pack, the size and quantity. We reply within 2 working days.',
+  description: `Tell us what you pack, the size and quantity.${replyDays ? ` We reply within ${replyDays} working days.` : ''}`,
   alternates: { canonical: '/request-quote' },
 }
 

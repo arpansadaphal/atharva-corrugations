@@ -12,7 +12,7 @@ export function CompanyGroup() {
   const office = group['F-08'].value
 
   return (
-    <section data-surface="light" className="section-padding bg-paper">
+    <section id="company" data-surface="light" className="section-padding bg-paper">
       <div className="container-site grid gap-12 lg:grid-cols-12">
         <div className="flex flex-col gap-6 lg:col-span-7">
           <SectionHeader eyebrow="Company" headline="Who we are" />

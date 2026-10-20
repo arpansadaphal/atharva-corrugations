@@ -13,13 +13,16 @@ export type FamilySlug =
   | 'sheets-pads-and-inserts'
   | 'protective-and-allied-packaging'
 
+/** Drawings in the illustration set (Design §7.4); see components/illustration */
+export type DrawingId = 'rsc' | 'fol' | 'diecut' | 'heavy' | 'partition' | 'angle' | 'honeycomb'
+
 export interface FamilyFormat {
   slug: string
   name: string
   /** General guidance we wrote; shown only once the client reviewer signs off (claim F-18-copy) */
   description: string
   /** A drawing from the illustration set, when one exists */
-  drawing?: 'rsc' | 'fol'
+  drawing?: DrawingId
 }
 
 export interface Family {
@@ -31,6 +34,8 @@ export interface Family {
   token: string
   /** One-line description: family index row and page introduction */
   summary: string
+  /** The family's drawing on the homepage index (Sitemap §6.1 H2) */
+  indexDrawing: DrawingId
   formats: FamilyFormat[]
   /** Claim that confirms these formats are made */
   formatsClaim: 'F-18' | 'F-27-allied'
@@ -45,6 +50,7 @@ export const families: Family[] = [
     name: 'Corrugated boxes',
     shortName: 'corrugated boxes',
     token: 'WEB-BOXES',
+    indexDrawing: 'rsc',
     summary: 'Regular slotted, telescopic and full-overlap boxes, made to your size.',
     formats: [
       {
@@ -73,12 +79,14 @@ export const families: Family[] = [
     name: 'Die-cut boxes',
     shortName: 'die-cut boxes',
     token: 'WEB-DIECUT',
+    indexDrawing: 'diecut',
     summary: 'Boxes cut to a custom shape from your drawing or sample.',
     formats: [
       {
         slug: 'die-cut',
         name: 'Die-cut box',
         description: 'Cut to shape in one piece, often with locking tabs so it folds up without glue or stitching.',
+        drawing: 'diecut',
       },
     ],
     formatsClaim: 'F-18',
@@ -93,9 +101,15 @@ export const families: Family[] = [
     name: 'Heavy-duty and export packaging',
     shortName: 'heavy-duty packaging',
     token: 'WEB-HEAVY',
+    indexDrawing: 'heavy',
     summary: 'Heavy-duty and export-type boxes for heavy and engineered parts.',
     formats: [
-      { slug: 'heavy-duty', name: 'Heavy-duty box', description: 'Multi-wall construction for heavy, dense or awkward loads.' },
+      {
+        slug: 'heavy-duty',
+        name: 'Heavy-duty box',
+        description: 'Multi-wall construction for heavy, dense or awkward loads.',
+        drawing: 'heavy',
+      },
       { slug: 'export-type', name: 'Export-type box', description: 'Built for long transit and repeated handling.' },
     ],
     formatsClaim: 'F-18',
@@ -110,11 +124,17 @@ export const families: Family[] = [
     name: 'Sheets, pads and inserts',
     shortName: 'sheets, pads and inserts',
     token: 'WEB-SHEETS',
+    indexDrawing: 'partition',
     summary: 'Sheets, layer pads, partitions, inserts, dividers and rolls.',
     formats: [
       { slug: 'sheets', name: 'Corrugated sheets', description: 'Flat board cut to size.' },
       { slug: 'layer-pads', name: 'Layer pads', description: 'Flat pads that separate and stabilise layers on a pallet.' },
-      { slug: 'partitions', name: 'Partitions and dividers', description: 'Slotted dividers that keep items apart inside a box.' },
+      {
+        slug: 'partitions',
+        name: 'Partitions and dividers',
+        description: 'Slotted dividers that keep items apart inside a box.',
+        drawing: 'partition',
+      },
       { slug: 'inserts', name: 'Inserts', description: 'Shaped pieces that hold a product in place.' },
       { slug: 'rolls', name: 'Corrugated rolls', description: 'Single-face board on a roll, for wrapping.' },
     ],
@@ -130,11 +150,12 @@ export const families: Family[] = [
     name: 'Protective and allied packaging',
     shortName: 'protective packaging',
     token: 'WEB-PROTECTIVE',
+    indexDrawing: 'angle',
     summary: 'Paper core assemblies, angle corners, honeycomb and pulp trays.',
     formats: [
       { slug: 'paper-cores', name: 'Paper core assemblies', description: 'Paper tubes and assemblies that support and protect a product.' },
-      { slug: 'angle-corners', name: 'Angle corners', description: 'Edge protectors for strapped and stacked loads.' },
-      { slug: 'honeycomb', name: 'Honeycomb', description: 'Light, stiff paper panels for cushioning and void fill.' },
+      { slug: 'angle-corners', name: 'Angle corners', description: 'Edge protectors for strapped and stacked loads.', drawing: 'angle' },
+      { slug: 'honeycomb', name: 'Honeycomb', description: 'Light, stiff paper panels for cushioning and void fill.', drawing: 'honeycomb' },
       { slug: 'pulp-trays', name: 'Paper pulp trays', description: 'Trays that hold parts in place.' },
     ],
     formatsClaim: 'F-27-allied',

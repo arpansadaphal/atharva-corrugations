@@ -22,6 +22,12 @@ export interface McbResult {
   passes: boolean
 }
 
+/** The claim a family's applications come from, if any */
+export function applicationsClaim(f: Family) {
+  const a = familyEvidence[f.slug].applications
+  return a ? getClaim(a.claim as Parameters<typeof getClaim>[0]) : undefined
+}
+
 export function applicationsFor(f: Family, mode: ClaimsMode = getClaimsMode()): string[] {
   const a = familyEvidence[f.slug].applications
   if (!a) return []

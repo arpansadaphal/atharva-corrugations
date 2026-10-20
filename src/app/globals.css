@@ -120,6 +120,11 @@
     @apply bg-paper font-sans text-copy text-body;
   }
 
+  /* Anchored sections land below the sticky header */
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+
   /* Focus ring: 2 px accent, 2 px offset on light; white on ink (Design §14) */
   :focus-visible {
     outline: 2px solid var(--accent);
@@ -171,6 +176,16 @@
   background-size: 256px 256px;
 }
 
+/* Client review markers (preview and development builds only; production never
+   renders the attribute). Gated wraps facts in a `display: contents` element,
+   so its children are outlined; other markers sit on the element itself.
+   The review banner can switch them off with .review-marks-off on <html>. */
+:root:not(.review-marks-off) [data-review-claim]:not(.contents),
+:root:not(.review-marks-off) [data-review-claim].contents > * {
+  outline: 2px dashed var(--kraft-400);
+  outline-offset: 3px;
+}
+
 /* Navigation underline: draws in 200 ms on hover; persistent when active */
 .nav-underline {
   position: relative;
@@ -195,7 +210,8 @@
 }
 
 /* Hero dieline sequence (Design §9): cut lines draw ≈900 ms, creases and
-   callouts fade in, the title block fills; ≈1.2 s, once, then still. Pure
+   callouts fade in; ≈1.2 s, once, then still. The facts beside it are never
+   animated, so they are readable on first paint with no shift. Pure
    CSS, so with no JavaScript it still ends static; reduced motion makes it
    instant through the global rule below. */
 @keyframes dieline-wipe {
@@ -224,8 +240,7 @@
   animation: fade-in 400ms var(--ease-out-expo) 450ms both;
 }
 
-.dieline-animate .dieline-callouts,
-.hero-strip-animate {
+.dieline-animate .dieline-callouts {
   animation: fade-in 300ms var(--ease-out-expo) 900ms both;
 }
 

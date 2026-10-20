@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { claims, type ClaimId, type ClaimValue } from '@/data/claims'
-import { getClaimsMode, isPublishable, isRenderable, statusOf } from '@/lib/claims'
+import { getClaimsMode, isPublishable, isRenderable } from '@/lib/claims'
 import { cn } from '@/lib/utils'
 import type { ClaimsMode } from '@/types/claims'
 
@@ -43,17 +43,11 @@ export function TitleBlock({ cells, min = 1, max = 4, theme = 'light', size = 'm
   if (visible.length < min) return null
 
   const isDark = theme === 'dark'
-  // One row from 768 px; inside a drawing sheet ('sm') the column is narrow,
-  // so it stays 2×2 until 1440 px
-  const wide = size === 'sm' ? 'xl' : 'md'
-  const cols = {
-    md: { 1: 'md:grid-cols-1', 2: 'md:grid-cols-2', 3: 'md:grid-cols-3', 4: 'md:grid-cols-4' },
-    xl: { 1: 'xl:grid-cols-1', 2: 'xl:grid-cols-2', 3: 'xl:grid-cols-3', 4: 'xl:grid-cols-4' },
-  }[wide][visible.length as 1 | 2 | 3 | 4]
-  const rowRules = {
-    md: { left: 'md:border-l md:pl-4', noTop: 'md:border-t-0' },
-    xl: { left: 'xl:border-l xl:pl-4', noTop: 'xl:border-t-0' },
-  }[wide]
+  // One row from 768 px. Inside a drawing sheet ('sm') the column is narrow,
+  // so it stays 2×2 at every width (labels and values never wrap to 3 lines)
+  const cols =
+    size === 'sm' ? undefined : { 1: 'md:grid-cols-1', 2: 'md:grid-cols-2', 3: 'md:grid-cols-3', 4: 'md:grid-cols-4' }[visible.length as 1 | 2 | 3 | 4]
+  const rowRules = size === 'sm' ? { left: undefined, noTop: undefined } : { left: 'md:border-l md:pl-4', noTop: 'md:border-t-0' }
 
   return (
     <dl
@@ -66,12 +60,12 @@ export function TitleBlock({ cells, min = 1, max = 4, theme = 'light', size = 'm
     >
       {visible.map((c, i) => {
         const claim = claims[c.claim]
-        const flagged = resolvedMode === 'development' && !isPublishable(claim)
+        const flagged = resolvedMode !== 'production' && !isPublishable(claim)
         return (
           <div
             key={`${c.claim}-${c.label}`}
-            data-claim={flagged ? c.claim : undefined}
-            title={flagged ? `${c.claim} · ${statusOf(claim)} — hidden at launch unless verified` : undefined}
+            // spread, not `={undefined}`: production output never carries the key at all
+            {...(flagged ? { 'data-review-claim': c.claim } : {})}
             className={cn(
               'flex flex-col gap-1 pr-4',
               size === 'sm' ? 'py-3' : 'py-4',
@@ -80,7 +74,6 @@ export function TitleBlock({ cells, min = 1, max = 4, theme = 'light', size = 'm
               i > 0 && rowRules.left,
               i > 1 && ['border-t', rowRules.noTop],
               isDark ? 'border-line-dark' : 'border-line',
-              flagged && 'outline-2 -outline-offset-2 outline-dashed outline-kraft-400',
             )}
           >
             <dt className={cn('text-label font-semibold uppercase', isDark ? 'text-on-dark-muted' : 'text-muted')}>

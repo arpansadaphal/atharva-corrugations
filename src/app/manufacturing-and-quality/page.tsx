@@ -6,7 +6,7 @@ import { EcoVadisCard, IsoCertificateCard } from '@/components/sections/Certific
 import { Gated } from '@/components/ui/Gated'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { TitleBlock, cell } from '@/components/ui/TitleBlock'
-import { getClaim, getClaimsMode, gatedValue, isRenderable } from '@/lib/claims'
+import { getClaim, getClaimsMode, gatedValue, isRenderable, reviewAttrs } from '@/lib/claims'
 import { contextForPath, whatsappUrl } from '@/lib/whatsapp'
 
 export const metadata: Metadata = {
@@ -60,14 +60,14 @@ export default function ManufacturingQualityPage() {
 
       {/* M3 What the plant does */}
       {groups.length > 0 && (
-        <section data-surface="dark" className="surface-dark surface-texture section-padding">
+        <section id="capabilities" data-surface="dark" className="surface-dark surface-texture section-padding">
           <div className="container-site flex flex-col gap-10">
             <SectionHeader eyebrow="Capabilities" headline="What our plant does" theme="dark" />
-            <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-8 md:grid-cols-2 md:gap-10 lg:grid-cols-4">
               {groups.map((g) => (
-                <div key={g.title} className="flex flex-col gap-3 border-t border-dashed border-accent-on-dark pt-4">
+                <div key={g.title} className="flex flex-col gap-3 border-t border-dashed border-accent-on-dark pt-4" {...reviewAttrs(g.source, mode)}>
                   <h3 className="text-label font-semibold text-on-dark-muted uppercase">{g.title}</h3>
-                  <ul className="flex flex-col gap-2 text-spec">
+                  <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-spec md:flex md:flex-col">
                     {g.items.map((item) => (
                       <li key={item}>{item}</li>
                     ))}
@@ -81,10 +81,10 @@ export default function ManufacturingQualityPage() {
 
       {/* M4 Process flow */}
       {flow.length > 0 && (
-        <section data-surface="light" className="section-padding bg-paper">
+        <section id="process" data-surface="light" className="section-padding bg-paper">
           <div className="container-site flex flex-col gap-10">
             <SectionHeader eyebrow="Process" headline="How an order moves through the plant" />
-            <ol className="grid gap-0 border-t border-line md:grid-cols-4">
+            <ol className="grid gap-0 border-t border-line md:grid-cols-4" {...reviewAttrs(processes, mode)}>
               {flow.map((s, i) => (
                 <li key={s.title} className="flex flex-col gap-2 border-b border-line py-6 md:border-r md:border-b-0 md:px-6 md:first:pl-0 md:last:border-r-0">
                   <span aria-hidden="true" className="tabular text-spec font-semibold text-accent">
@@ -100,7 +100,7 @@ export default function ManufacturingQualityPage() {
       )}
 
       {/* M5 Quality and M6 certificates and ratings (verified only) */}
-      <section data-surface="light" className="section-padding bg-paper-50">
+      <section id="quality" data-surface="light" className="section-padding bg-paper-50">
         <div className="container-site grid gap-12 lg:grid-cols-2">
           <div className="flex flex-col gap-6">
             <SectionHeader eyebrow="Quality" headline="How we check our work" />
@@ -116,7 +116,7 @@ export default function ManufacturingQualityPage() {
           </div>
           {practices && (
             <Gated claim="F-38" as="div">
-              <ul className="grid gap-x-8 gap-y-2 border-t border-line pt-4 md:grid-cols-2">
+              <ul className="grid grid-cols-2 gap-x-4 gap-y-2 border-t border-line pt-4 md:gap-x-8">
                 {practices.map((p) => (
                   <li key={p}>{p}</li>
                 ))}
@@ -129,7 +129,7 @@ export default function ManufacturingQualityPage() {
       {/* M7 Sustainability (collapsing): general statements only, no percentages, no FSC/PEFC/WRAP */}
       <Gated claim="F-44">
         {(statements) => (
-          <section data-surface="light" className="section-padding bg-paper">
+          <section id="sustainability" data-surface="light" className="section-padding bg-paper">
             <div className="container-site flex flex-col gap-6">
               <SectionHeader eyebrow="Sustainability" headline="Material and recycling" />
               <ul className="measure flex flex-col gap-2">

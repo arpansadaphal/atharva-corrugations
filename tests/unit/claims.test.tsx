@@ -82,9 +82,21 @@ describe('<Gated>', () => {
   it('renders confirmed claims without a wrapper in every mode', () => {
     for (const mode of ['development', 'preview', 'production'] as const) expect(html(mode, 'F-03')).toBe('<b>content</b>')
   })
-  it('outlines unverified claims in development only', () => {
-    expect(html('development', 'F-40')).toContain('data-claim="F-40"')
-    expect(html('preview', 'F-40')).toBe('<b>content</b>')
+  it('marks unverified claims for the client review in preview and development, never in production', () => {
+    for (const mode of ['development', 'preview'] as const) {
+      const out = html(mode, 'F-40')
+      // a single element carries the marker itself: no wrapper, valid lists and tables
+      expect(out).toBe('<b data-review-claim="F-40" data-claim-status="verify">content</b>')
+    }
+    const wrapped = renderToStaticMarkup(
+      <Gated claim="F-40" mode="preview">
+        <b>a</b>
+        <b>b</b>
+      </Gated>,
+    )
+    expect(wrapped).toContain('class="contents"') // several children: layout-neutral wrapper
+    expect(html('production', 'F-40')).toBe('')
+    expect(html('preview', 'F-03')).toBe('<b>content</b>') // confirmed: no marker
   })
   it('passes the typed value to a render function', () => {
     const out = renderToStaticMarkup(
