@@ -1,8 +1,10 @@
 @import 'tailwindcss';
 
-/* Header only: the full desktop navigation needs ~1100 px, so it starts at
-   1280 px; below that the header uses the menu button */
-@custom-variant nav (@media (width >= 80rem));
+/* Header only: the full desktop navigation needs 1,050 px of content, which
+   fits from a 1120 px window; it starts at 1152 px (72rem) for some margin.
+   Below that the header uses the menu button. Keep NAV_DESKTOP_QUERY in
+   Navbar.tsx in step. */
+@custom-variant nav (@media (width >= 72rem));
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Design tokens — CORRUGATIONS_DESIGN_DIRECTION.md §5.2

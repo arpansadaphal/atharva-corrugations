@@ -30,6 +30,15 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 - Banned strings: scanned in `src/`, `public/` and `package.json`, with a per-file allow-list. Docs, tests and scripts are not scanned.
 - Claim expiry: judged at build time (`CLAIMS_AS_OF` in `build:launch`, plus `check-claims`), because prerendering may not read the clock.
 
+## 2026-10-20 — Fixes from the hosted client review
+
+- **Page stopped scrolling after using the navbar.**
+  - Cause: the mobile menu locks body scrolling while open. If the window widened past the desktop breakpoint while it was open (a Mac window going full screen), CSS hid the menu but its state stayed open. The lock never released, and the now-visible desktop links navigated with the page still locked.
+  - Fix: the navbar closes the menu on every route change, and when a `matchMedia` listener sees desktop width.
+  - Two regression e2e tests cover it: widen-then-navigate, and navigate-from-menu.
+- **Menu button at laptop window sizes.** The full navbar needs 1,050 px of content and fits from a 1120 px window, so the header breakpoint moved from 1280 to **1152 px** (`nav` variant in globals.css, `NAV_DESKTOP_QUERY` in Navbar.tsx). Type and spacing unchanged. Tablets in landscape (1024–1151) keep the menu button. A test checks the switch at exactly 1151/1152 and no overflow at 1152.
+- One local build reused stale CSS for the breakpoint change; a clean build fixed it and it could not be reproduced. If a Vercel deploy shows old styles, redeploy without the build cache.
+
 ## 2026-10-20 — M8 QA and pre-launch (automatable part)
 
 - **Security headers** (`security-headers.ts`, Technical §11):

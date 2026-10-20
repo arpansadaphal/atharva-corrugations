@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
-const WIDTHS = [360, 390, 768, 1024, 1280, 1440]
+const WIDTHS = [360, 390, 768, 1024, 1152, 1280, 1440]
 const PAGES = [
   '/',
   '/products',
@@ -161,8 +161,50 @@ test.describe('floating WhatsApp and 404', () => {
   })
 })
 
+test.describe('menu never leaves the page locked (bug found on the hosted review, 2026-10-20)', () => {
+  const canScroll = async (page: import('@playwright/test').Page) => {
+    await page.evaluate(() => window.scrollTo(0, 0))
+    await page.mouse.move(600, 500)
+    await page.mouse.wheel(0, 800)
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
+  }
+
+  test('menu open at laptop width, window widened, desktop nav used: page still scrolls', async ({ page }) => {
+    await page.setViewportSize({ width: 1100, height: 800 })
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Open menu' }).click()
+    await expect(page.getByRole('dialog', { name: 'Menu' })).toBeVisible()
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await expect(page.getByRole('dialog', { name: 'Menu' })).toHaveCount(0)
+    expect(await page.evaluate(() => document.body.style.overflow)).toBe('')
+    await page.locator('header nav[aria-label="Main"]').getByRole('link', { name: 'Industries' }).click()
+    await expect(page).toHaveURL(/\/industries$/)
+    await canScroll(page)
+  })
+
+  test('navigating from inside the menu leaves the page scrollable', async ({ page }) => {
+    await page.setViewportSize({ width: 1100, height: 800 })
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Open menu' }).click()
+    await page.getByRole('dialog', { name: 'Menu' }).getByRole('link', { name: 'About' }).click()
+    await expect(page).toHaveURL(/\/about$/)
+    await expect(page.getByRole('dialog', { name: 'Menu' })).toHaveCount(0)
+    expect(await page.evaluate(() => document.body.style.overflow)).toBe('')
+    await canScroll(page)
+  })
+
+  test('full navigation from 1152 px; menu button below', async ({ page }) => {
+    await page.setViewportSize({ width: 1151, height: 800 })
+    await page.goto('/')
+    await expect(page.getByRole('button', { name: 'Open menu' })).toBeVisible()
+    await page.setViewportSize({ width: 1152, height: 800 })
+    await expect(page.getByRole('button', { name: 'Open menu' })).toBeHidden()
+    await expect(page.locator('header nav[aria-label="Main"]')).toBeVisible()
+  })
+})
+
 test.describe('header at desktop widths', () => {
-  for (const width of [1280, 1440]) {
+  for (const width of [1152, 1280, 1440]) {
     test(`quote button stays on one line at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 })
       await page.goto('/')

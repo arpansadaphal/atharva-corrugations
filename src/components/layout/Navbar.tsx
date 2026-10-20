@@ -20,6 +20,9 @@ export interface NavbarProps {
   productLinks: NavLink[]
 }
 
+/** Same width as the `nav` variant in globals.css */
+const NAV_DESKTOP_QUERY = '(width >= 72rem)'
+
 function isActive(pathname: string, href: string) {
   return href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`)
 }
@@ -27,7 +30,7 @@ function isActive(pathname: string, href: string) {
 /**
  * Header (Sitemap §3, Design §13). Permanently white, matching the as-built
  * Group navbar (D-04); scroll only deepens the hairline into a shadow.
- * Full navigation from 1280 px; below that, logo, WhatsApp control and menu button.
+ * Full navigation from 1152 px; below that, logo, WhatsApp control and menu button.
  */
 export function Navbar({ groupName, whatsappNumber, productLinks }: NavbarProps) {
   const pathname = usePathname()
@@ -38,6 +41,25 @@ export function Navbar({ groupName, whatsappNumber, productLinks }: NavbarProps)
   const closeMenu = useCallback(() => {
     setMenuOpen(false)
     menuButton.current?.focus()
+  }, [])
+
+  // The open menu locks page scrolling, so it must never stay open where it
+  // cannot be seen: close it on every route change…
+  const [menuPath, setMenuPath] = useState(pathname)
+  if (pathname !== menuPath) {
+    setMenuPath(pathname)
+    setMenuOpen(false)
+  }
+
+  // …and when the window grows to desktop width, where CSS hides the menu
+  // (for example a Mac window switched to full screen while it was open)
+  useEffect(() => {
+    const desktop = window.matchMedia(NAV_DESKTOP_QUERY)
+    const onChange = () => {
+      if (desktop.matches) setMenuOpen(false)
+    }
+    desktop.addEventListener('change', onChange)
+    return () => desktop.removeEventListener('change', onChange)
   }, [])
 
   useEffect(() => {
