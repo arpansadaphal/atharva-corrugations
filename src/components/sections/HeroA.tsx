@@ -41,7 +41,7 @@ export function HeroA({ whatsappHref, strip = 'plate', mode, headingLevel: Headi
   )
 
   return (
-    <section className="surface-dark surface-texture relative overflow-hidden">
+    <section data-surface="dark" className="surface-dark surface-texture relative overflow-hidden">
       <div className="container-site grid items-center gap-10 py-12 md:py-20 lg:grid-cols-12 lg:gap-12 lg:py-24">
         <div className="flex flex-col gap-6 lg:col-span-7">
           <p className="flex items-center gap-3">

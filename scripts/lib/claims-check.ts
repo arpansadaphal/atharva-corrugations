@@ -1,4 +1,4 @@
-import { claimGroups, claims } from '../../src/data/claims'
+import { TRUST_FLOOR, claimGroups, claims, trustSignals } from '../../src/data/claims'
 import { group } from '../../src/group/group'
 import { isExpired, isPublishable, renderableIds, statusOf } from '../../src/lib/claims'
 import type { Claim } from '../../src/types/claims'
@@ -90,4 +90,15 @@ export function summary(today: Date) {
     status: statusOf(c),
     launches: isPublishable(c, today) ? 'yes' : 'no',
   }))
+}
+
+/** Trust-floor count (Strategy §6, Technical §4.3): reported, never blocking */
+export function trustFloor(today: Date) {
+  const rows = trustSignals.map((t) => ({
+    signal: t.signal,
+    claim: t.claim ?? '—',
+    verified: t.claim ? isPublishable(claims[t.claim], today) : false,
+  }))
+  const count = rows.filter((r) => r.verified).length
+  return { rows, count, floor: TRUST_FLOOR, met: count >= TRUST_FLOOR }
 }

@@ -1,52 +1,42 @@
-import { Gated } from '@/components/ui/Gated'
-import { SectionHeader } from '@/components/ui/SectionHeader'
-import { formatPhone, telHref } from '@/lib/format'
+import type { Metadata } from 'next'
+import { CompanyGroup } from '@/components/sections/CompanyGroup'
+import { FamilyIndex } from '@/components/sections/FamilyIndex'
+import { HeroA } from '@/components/sections/HeroA'
+import { IndustryGrid } from '@/components/sections/IndustryGrid'
+import { ManufacturingQuality } from '@/components/sections/ManufacturingQuality'
+import { ProcessSteps } from '@/components/sections/ProcessSteps'
+import { QuoteBand } from '@/components/sections/QuoteBand'
+import { SpecialisedPackaging } from '@/components/sections/SpecialisedPackaging'
+import { TrustRow } from '@/components/sections/TrustRow'
+import { gatedValue } from '@/lib/claims'
+import { contextForPath, whatsappUrl } from '@/lib/whatsapp'
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+}
 
 /**
- * Holding page until the homepage milestone (M4). Uses confirmed contact
- * facts only, so it is safe to show in any mode.
+ * Home (Sitemap §6.1). Rhythm: hero dark → families white → process
+ * slate-50 → industries white → manufacturing dark → specialised white →
+ * trust slate-50 → company white → quote band dark → footer dark. H6 and H7
+ * render only with evidence; without them this is the reduced homepage
+ * (Strategy §6 trust-floor fallback) and the rhythm still holds.
  */
 export default function Home() {
-  return (
-    <section className="section-padding">
-      <div className="container-site flex flex-col gap-8">
-        <SectionHeader
-          eyebrow="Corrugated packaging"
-          headline="Atharva Corrugations"
-          headingLevel="h1"
-          description="Our new website is being built."
-        />
+  const phones = gatedValue('F-12')
+  const whatsappHref = phones ? whatsappUrl(phones.whatsapp, contextForPath('/')) : undefined
 
-        <div className="measure flex flex-col gap-2">
-          <Gated claim="F-12">
-            {(phones) => (
-              <p>
-                Call or WhatsApp{' '}
-                <a className="text-accent underline underline-offset-4" href={telHref(phones.main)}>
-                  {formatPhone(phones.main)}
-                </a>
-              </p>
-            )}
-          </Gated>
-          <Gated claim="F-13">
-            {(emails) => (
-              <p>
-                Email{' '}
-                <a className="text-accent underline underline-offset-4" href={`mailto:${emails.sales}`}>
-                  {emails.sales}
-                </a>
-              </p>
-            )}
-          </Gated>
-          <Gated claim="F-14">
-            {(h) => (
-              <p className="text-muted">
-                {h.days}, {h.hours}
-              </p>
-            )}
-          </Gated>
-        </div>
-      </div>
-    </section>
+  return (
+    <>
+      <HeroA whatsappHref={whatsappHref} strip="plate" />
+      <FamilyIndex />
+      <ProcessSteps />
+      <IndustryGrid />
+      <ManufacturingQuality />
+      <SpecialisedPackaging />
+      <TrustRow />
+      <CompanyGroup />
+      <QuoteBand whatsappHref={whatsappHref} />
+    </>
   )
 }

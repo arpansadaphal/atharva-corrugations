@@ -12,7 +12,7 @@ import { getClaimsMode } from '@/lib/claims'
  */
 export function FamilyIndex() {
   return (
-    <section className="section-padding bg-paper">
+    <section data-surface="light" className="section-padding bg-paper">
       <div className="container-site flex flex-col gap-10">
         <SectionHeader eyebrow="Products" headline="What we make" />
         <ul className="border-t border-line">

@@ -13,7 +13,7 @@ export function ProcessSteps({ background = 'paper-50' }: { background?: 'paper'
   return (
     <Gated claim="F-30">
       {(support) => (
-        <section className={background === 'paper' ? 'section-padding bg-paper' : 'section-padding bg-paper-50'}>
+        <section data-surface="light" className={background === 'paper' ? 'section-padding bg-paper' : 'section-padding bg-paper-50'}>
           <div className="container-site flex flex-col gap-12">
             <SectionHeader
               eyebrow="Custom packaging"

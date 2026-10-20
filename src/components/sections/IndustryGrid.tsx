@@ -11,7 +11,7 @@ import { alsoServing, topIndustries } from '@/data/industries'
 export function IndustryGrid() {
   return (
     <Gated claim="F-46">
-      <section className="section-padding bg-paper">
+      <section data-surface="light" className="section-padding bg-paper">
         <div className="container-site flex flex-col gap-10">
           <SectionHeader eyebrow="Industries" headline="Who we make packaging for" />
           <Gated claim="F-27">

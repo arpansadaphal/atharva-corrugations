@@ -10,7 +10,7 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 | M2 Shell (navbar, footer, floating WhatsApp, 404) | C2 | Done 2026-10-20 (commit 229c886) |
 | M3 Quote flow | C3 | Done 2026-10-20 (commit fb199b4). Delivery location on standby, optional |
 | G2 design comps | Phase B | **Approved 2026-10-20**: Hero version 1, 58% copy column, components approved |
-| M4 Homepage | C4 + C7 | In progress |
+| M4 Homepage | C4 + C7 (part) | **Done 2026-10-20, awaiting owner review (G4)** |
 | M5–M9 | C5–C8, Phases D–E | Not started |
 
 ## Decisions recorded (2026-10-20)
@@ -25,6 +25,18 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 - Claim statuses: CONFLICT → verify, EXTERNAL → restricted. RESTRICTED facts are not stored in the repo.
 - Banned strings: scanned in `src/`, `public/` and `package.json`, with a per-file allow-list. Docs, tests and scripts are not scanned.
 - Claim expiry: judged at build time (`CLAIMS_AS_OF` in `build:launch`, plus `check-claims`), because prerendering may not read the clock.
+
+## 2026-10-20 — M4 Homepage
+
+- `/` assembled per Sitemap §6.1: Hero A (version 1), What we make, From specification to delivery, Industries, Manufacturing and quality, Specialised (H6), Certificates and ratings (H7), Who we are (H8), quote band.
+- H6 renders only with ≥ 2 items that have an approved photograph and a verified spec: none yet, so it is always absent. H7 renders only verified certificate or rating cards; absent at launch today.
+- **G4 gating test:** the homepage is rendered in three states: all claims (preview), only confirmed (production), and some (ISO verified). Each must keep the rhythm rule (≤ 2 dark, ≤ 3 light in a row, footer included) and render no unverified text in production.
+- **Trust floor today: 2 of 4** (customers audit the plant, Atharva Group). `check-claims` reports it. At G6 the owner decides between the reduced homepage and delay.
+- The certificate card no longer states a scope; it shows only fields held in the claim (issuer, validity, number).
+- Lighthouse mobile (launch build, local): Performance 96–99, Accessibility 100, Best Practices 100, SEO 100. CLS 0.
+- **LCP at risk:** 2.2–2.8 s simulated against the 2.5 s budget; 1.5 s with DevTools throttling. The LCP element is the hero H1 text. Re-measure in Lighthouse CI and on a real mid-range Android (M8).
+- Fixed: canonical origin falls back to https://www.atharvacorrugations.com (env overrides). Added a neutral Crease Mark favicon (not a logo; replaced when the logo arrives, Q-06); the missing favicon had caused a console 404.
+- Tests: 69 unit, 63 e2e.
 
 ## 2026-10-20 — G2 design comps (`/specimen/home`, dev and preview only)
 

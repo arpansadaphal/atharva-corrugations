@@ -273,7 +273,7 @@ export const claims = {
   'F-42': claim({
     id: 'F-42',
     title: 'EcoVadis rating',
-    value: { medal: 'Bronze' },
+    value: { medal: 'Bronze', year: undefined as number | undefined },
     label: 'VERIFY',
     note: 'A rating, not a certification; show with year once the scorecard arrives (Q-15)',
   }),
@@ -352,3 +352,22 @@ export const claimGroups = {
     min: 3,
   },
 } as const
+
+/**
+ * Homepage trust signals, Strategy §6 rows 1–8. At gate G6 the homepage
+ * needs at least four verified; otherwise launch the reduced homepage or
+ * delay (a human decision; check-claims only reports the count).
+ * `claim: null` marks evidence that has no claim yet.
+ */
+export const trustSignals: { signal: string; claim: ClaimId | null }[] = [
+  { signal: 'ISO 9001:2015 certificate', claim: 'F-40' },
+  { signal: 'Plant photographs and machinery list', claim: null },
+  { signal: 'Board range and process specification', claim: 'F-20' },
+  { signal: 'Named test practices and in-house lab', claim: 'F-38' },
+  { signal: 'Customers audit and approve our plant', claim: 'F-39' },
+  { signal: 'Atharva Group', claim: 'F-07' },
+  { signal: 'Haier recognition', claim: null },
+  { signal: 'EcoVadis rating', claim: 'F-42' },
+]
+
+export const TRUST_FLOOR = 4

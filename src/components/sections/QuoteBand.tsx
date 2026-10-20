@@ -27,7 +27,7 @@ export function QuoteBand({
   const phones = gatedValue('F-12')
 
   return (
-    <section className="surface-dark surface-texture section-padding">
+    <section data-surface="dark" className="surface-dark surface-texture section-padding">
       <div className="container-site">
         <div className="mx-auto flex max-w-[640px] flex-col items-center gap-6 text-center">
           <Heading className="text-h2-sm font-normal text-on-dark lg:text-h2">{headline}</Heading>

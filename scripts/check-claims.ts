@@ -22,6 +22,7 @@ import {
   isKnownClaim,
   readsRegistryDirectly,
   summary,
+  trustFloor,
   type Problem,
 } from './lib/claims-check'
 
@@ -63,6 +64,13 @@ for (const path of walk(join(ROOT, 'src')).filter((p) => /\.(ts|tsx)$/.test(p)))
 
 console.log(`Claims report — ${production ? 'PRODUCTION (blocking)' : 'preview (warnings only)'}\n`)
 console.table(summary(today).map((r) => ({ ...r, usedIn: [...(usage.get(r.id) ?? [])].join(', ') || '—' })))
+
+const trust = trustFloor(today)
+console.log(`\nTrust floor (Strategy §6): ${trust.count} of ${trust.floor} verified homepage signals`)
+console.table(trust.rows)
+if (!trust.met) {
+  console.warn(`! Below the trust floor: launch the reduced homepage or delay (owner decision at G6).`)
+}
 
 const errors = problems.filter((p) => p.level === 'error')
 for (const p of problems) console[p.level === 'error' ? 'error' : 'warn'](`${p.level === 'error' ? '✗' : '!'} ${p.message}`)

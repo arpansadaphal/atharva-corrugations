@@ -17,10 +17,11 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+// Canonical origin, the www form (Technical §4.4); env overrides for staging
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.atharvacorrugations.com'
 
 export const metadata: Metadata = {
-  ...(siteUrl && { metadataBase: new URL(siteUrl) }),
+  metadataBase: new URL(siteUrl),
   title: {
     default: 'Corrugated Box Manufacturer in Pune | Atharva Corrugations',
     template: '%s | Atharva Corrugations',
