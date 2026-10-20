@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
     LAUNCH: process.env.LAUNCH ?? '',
     CLAIMS_AS_OF: process.env.CLAIMS_AS_OF ?? '',
   },
+  // Staging and preview are never indexed: the header backs up robots.txt and
+  // the noindex meta (Technical §6). Security headers come in M8.
+  async headers() {
+    if (process.env.LAUNCH === 'true') return []
+    return [{ source: '/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] }]
+  },
   turbopack: {
     rules: {
       '*.css': {

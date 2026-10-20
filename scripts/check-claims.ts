@@ -25,6 +25,8 @@ import {
   trustFloor,
   type Problem,
 } from './lib/claims-check'
+import { claims } from '../src/data/claims'
+import { isPublishable } from '../src/lib/claims'
 
 const ROOT = new URL('..', import.meta.url).pathname
 const production = process.env.LAUNCH === 'true'
@@ -38,6 +40,7 @@ function walk(dir: string): string[] {
 }
 
 const problems: Problem[] = [...checkRegistry(today), ...checkGroups(production)]
+const privacyPublished = isPublishable(claims['F-66'], today)
 const usage = new Map<string, Set<string>>()
 
 for (const path of walk(join(ROOT, 'src')).filter((p) => /\.(ts|tsx)$/.test(p))) {
@@ -59,6 +62,10 @@ for (const path of walk(join(ROOT, 'src')).filter((p) => /\.(ts|tsx)$/.test(p)))
   }
   for (const marker of ['⚠', 'AWAITING', 'lorem', 'TODO']) {
     if (source.includes(marker)) problems.push({ level: 'error', message: `${file}: placeholder "${marker}"` })
+  }
+  // The draft privacy policy may not go live with open counsel points
+  if (privacyPublished && source.includes('<CounselNote')) {
+    problems.push({ level: 'error', message: `${file}: privacy policy is marked published (F-66) but still has counsel notes` })
   }
 }
 

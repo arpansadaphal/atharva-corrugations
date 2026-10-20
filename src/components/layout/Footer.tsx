@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
+import { ConsentSettingsButton } from '@/components/analytics/Analytics'
 import { Gated } from '@/components/ui/Gated'
 import { companyLinks, privacyHref } from '@/data/navigation'
 import { group } from '@/group/group'
@@ -171,9 +172,12 @@ export function Footer() {
           <p>© Atharva Corrugations</p>
           <Gated claim="F-64">{(gstin) => <p className="tabular">GSTIN {gstin}</p>}</Gated>
           <Gated claim="F-65">{(cin) => <p className="tabular">CIN {cin}</p>}</Gated>
-          <Link href={privacyHref} className={linkClass}>
-            Privacy policy
-          </Link>
+          <Gated claim="F-66">
+            <Link href={privacyHref} className={linkClass}>
+              Privacy policy
+            </Link>
+          </Gated>
+          {process.env.NEXT_PUBLIC_GA_ID && <ConsentSettingsButton className={`${linkClass} min-h-11 text-left`} />}
         </div>
       </div>
     </footer>

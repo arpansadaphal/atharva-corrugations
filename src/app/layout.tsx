@@ -1,13 +1,16 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { Analytics } from '@/components/analytics/Analytics'
 import { FloatingWhatsApp } from '@/components/layout/FloatingWhatsApp'
 import { Footer } from '@/components/layout/Footer'
 import { Navbar } from '@/components/layout/Navbar'
 import { PreviewBanner } from '@/components/layout/PreviewBanner'
 import { Gated } from '@/components/ui/Gated'
+import { privacyHref } from '@/data/navigation'
 import { group } from '@/group/group'
 import { gatedValue, getClaimsMode } from '@/lib/claims'
 import { productLinks } from '@/lib/mcb'
+import { SITE_URL } from '@/lib/site'
 import './globals.css'
 
 // Weights 300–600 only; 200 is dropped (D-08)
@@ -18,17 +21,19 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
-// Canonical origin, the www form (Technical §4.4); env overrides for staging
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.atharvacorrugations.com'
+const description =
+  'Corrugated boxes, die-cut and heavy-duty packaging made at our Ranjangaon MIDC plant, Pune, with in-house design support. Request a quote.'
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'Corrugated Box Manufacturer in Pune | Atharva Corrugations',
     template: '%s | Atharva Corrugations',
   },
-  description:
-    'Corrugated boxes, die-cut and heavy-duty packaging made at our Ranjangaon MIDC plant, Pune, with in-house design support. Request a quote.',
+  description,
+  // One default share image (app/opengraph-image.tsx); per-family images later (Technical §6)
+  openGraph: { type: 'website', locale: 'en_IN', siteName: 'Atharva Corrugations', url: '/' },
+  twitter: { card: 'summary_large_image' },
   // Nothing is indexed until the claims gate is active (LAUNCH=true)
   robots: getClaimsMode() === 'production' ? undefined : { index: false, follow: false },
 }
@@ -65,6 +70,8 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
             <FloatingWhatsApp number={whatsappNumber} />
           </Gated>
         )}
+
+        <Analytics gaId={process.env.NEXT_PUBLIC_GA_ID || undefined} privacyHref={gatedValue('F-66') ? privacyHref : undefined} />
       </body>
     </html>
   )

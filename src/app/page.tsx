@@ -8,7 +8,9 @@ import { ProcessSteps } from '@/components/sections/ProcessSteps'
 import { QuoteBand } from '@/components/sections/QuoteBand'
 import { SpecialisedPackaging } from '@/components/sections/SpecialisedPackaging'
 import { TrustRow } from '@/components/sections/TrustRow'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { gatedValue } from '@/lib/claims'
+import { organizationSchema, websiteSchema } from '@/lib/schema'
 import { contextForPath, whatsappUrl } from '@/lib/whatsapp'
 
 export const metadata: Metadata = {
@@ -28,6 +30,8 @@ export default function Home() {
 
   return (
     <>
+      <JsonLd data={organizationSchema()} />
+      <JsonLd data={websiteSchema()} />
       <HeroA whatsappHref={whatsappHref} strip="plate" />
       <FamilyIndex />
       <ProcessSteps />

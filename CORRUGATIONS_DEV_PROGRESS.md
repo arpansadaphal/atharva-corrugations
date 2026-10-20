@@ -12,8 +12,9 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 | G2 design comps | Phase B | **Approved 2026-10-20**: Hero version 1, 58% copy column, components approved |
 | M4 Homepage | C4 + C7 (part) | Done 2026-10-20 (commit 45f2e16) |
 | M5 Products hub and family template | C5 | Done 2026-10-20 (commit dee4b09) |
-| M6 Inner pages | C6 | **Done 2026-10-20, awaiting owner review (G5)** |
-| M7–M9 | C8, Phases D–E | Not started |
+| M6 Inner pages | C6 | Done 2026-10-20 (commit 5b403ba) |
+| M7 SEO, analytics, privacy | C8 | **Done 2026-10-20, awaiting owner review** |
+| M8–M9 | Phases D–E | Not started |
 
 ## Decisions recorded (2026-10-20)
 
@@ -27,6 +28,31 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 - Claim statuses: CONFLICT → verify, EXTERNAL → restricted. RESTRICTED facts are not stored in the repo.
 - Banned strings: scanned in `src/`, `public/` and `package.json`, with a per-file allow-list. Docs, tests and scripts are not scanned.
 - Claim expiry: judged at build time (`CLAIMS_AS_OF` in `build:launch`, plus `check-claims`), because prerendering may not read the clock.
+
+## 2026-10-20 — M7 SEO, analytics, privacy
+
+- **Sitemap** (`/sitemap.xml`): launched routes only. Production lists 8 pages: no folded families, no privacy policy until F-66, no specimen. No `lastModified`: prerender cannot read the clock, and a wrong date is worse than none.
+- **Robots:** production allows all except `/api/` and points at the sitemap; preview disallows everything. Preview and staging also send `X-Robots-Tag: noindex, nofollow` (next.config) alongside the noindex meta.
+- **Structured data** (`src/lib/schema.ts`), built from gated claims:
+  - Organization (address, sales contact point with hours) and WebSite on the homepage;
+  - BreadcrumbList from every breadcrumb;
+  - deliberately left out: logo (Q-06), foundingDate (C-05), parentOrganization (Q-26), sameAs, and any Product, FAQ or review markup;
+  - "<" escaped per the Next.js JSON-LD guide.
+- Open Graph defaults (en_IN, site name), Twitter large card, and a generated 1200×630 share image (H-A headline, Crease Mark; no logo, no unverified facts).
+- **Analytics** (`src/components/analytics/Analytics.tsx`, TD-06):
+  - UTM captured once per session on landing; the quote form sends it.
+  - One delegated listener records `whatsapp_click` (with source token), `phone_click`, `email_click` and `product_cta_click` from the `data-event` attributes; the RFQ events were already wired.
+  - Events always go to `window.acplEvents`, a local list that never leaves the browser, and reach GA4 only after consent.
+  - **GA4 only with `NEXT_PUBLIC_GA_ID` and after Accept.** Without an ID there is no notice and nothing is sent. Decline loads nothing. The choice is stored in this browser, and "Analytics choices" in the footer reopens it.
+- **Privacy policy** (`/privacy-policy`):
+  - a **draft for counsel**, written from what the site actually collects (quote and contact fields, UTM tags, analytics with consent; no IP stored; providers Vercel, Resend and Google);
+  - covers rights under the DPDP Act 2023, cookies and changes;
+  - open points marked "Counsel to confirm": legal name, providers and cross-border wording, retention, privacy contact (Q-09), publication date;
+  - preview only; a 404 in production until F-66 is confirmed;
+  - `check-claims` fails if F-66 is confirmed while counsel notes remain;
+  - the footer privacy link appears only once the policy is live.
+- Tests: 87 unit, 168 e2e (2 consent tests run on a GA build: `NEXT_PUBLIC_GA_ID=G-TEST npm run build && CONSENT_TEST=1 npx playwright test consent`).
+- Not done: Content-Security-Policy and security headers (M8). GA "key events" (`rfq_submit_success`, `whatsapp_click`) are marked in the GA admin, not in code.
 
 ## 2026-10-20 — M6 Inner pages
 

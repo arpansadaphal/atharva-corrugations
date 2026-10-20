@@ -12,6 +12,7 @@ The corporate site for Atharva Corrugations Pvt. Ltd. Planning documents are in 
 | `npm run check` | Typecheck, lint, unit tests, contrast, banned strings, claims report |
 | `npm run check:claims:launch` | The claims gate in blocking (production) mode |
 | `npm run test:e2e` | Playwright + axe against a running build (run `npm run build` first; uses the installed Chrome locally) |
+| `NEXT_PUBLIC_GA_ID=G-TEST npm run build && CONSENT_TEST=1 npx playwright test consent` | The analytics consent tests, which need a build with a GA ID (Google is blocked at the network) |
 
 Node 24 or later.
 

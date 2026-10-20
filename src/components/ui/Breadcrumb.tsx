@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { breadcrumbSchema } from '@/lib/schema'
 
 export interface Crumb {
   label: string
@@ -6,12 +8,13 @@ export interface Crumb {
 }
 
 /**
- * Breadcrumbs on every inner page (Sitemap §4.3). The last crumb is the
- * current page. BreadcrumbList structured data arrives with SEO (M7).
+ * Breadcrumbs on every inner page, visible and as BreadcrumbList structured
+ * data (Sitemap §4.3). The last crumb is the current page.
  */
 export function Breadcrumb({ items }: { items: Crumb[] }) {
   return (
     <nav aria-label="Breadcrumb">
+      <JsonLd data={breadcrumbSchema(items)} />
       <ol className="flex flex-wrap items-center gap-x-2 text-spec text-muted">
         {items.map((c, i) => (
           <li key={c.label} className="flex items-center gap-2">
