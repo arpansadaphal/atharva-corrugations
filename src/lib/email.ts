@@ -4,6 +4,7 @@ import {
   PRINTING_OPTIONS,
   REPEAT_OPTIONS,
   SPECIAL_NEEDS,
+  type ContactData,
   type RfqData,
 } from './rfq-schema'
 
@@ -97,18 +98,52 @@ export function autoReply(d: RfqData, ctx: EnquiryContext) {
   const drawing = ctx.whatsappDisplay
     ? `To send a drawing, reply to this email with the file attached or message us on WhatsApp at ${ctx.whatsappDisplay}.`
     : 'To send a drawing, reply to this email with the file attached.'
-  const lines = [
-    `Thank you for your enquiry. Your reference is ${ctx.reference}.`,
-    `We reply within ${ctx.replyPromise}.`,
-    drawing,
-  ]
+  return customerEmail(
+    `We received your enquiry ${ctx.reference} · Atharva Corrugations`,
+    [`Thank you for your enquiry. Your reference is ${ctx.reference}.`, `We reply within ${ctx.replyPromise}.`, drawing],
+    rows,
+    ctx,
+  )
+}
+
+/** Confirmation to the customer: message lines, a copy of what they sent, and our address */
+function customerEmail(subject: string, lines: string[], rows: [string, string][], ctx: EnquiryContext) {
   const footer = ['Atharva Corrugations', ctx.plantAddress].filter(Boolean) as string[]
   return {
-    subject: headerSafe(`We received your enquiry ${ctx.reference} · Atharva Corrugations`),
+    subject: headerSafe(subject),
     html:
       lines.map((l) => `<p style="font:14px/1.5 Arial,sans-serif;color:#0f172a">${escapeHtml(l)}</p>`).join('') +
       `<p style="font:600 14px Arial,sans-serif;color:#0f172a">What you sent</p>${table(rows)}` +
       `<p style="font:13px/1.5 Arial,sans-serif;color:#475569">${footer.map(escapeHtml).join('<br>')}</p>`,
     text: `${lines.join('\n\n')}\n\nWhat you sent\n\n${textTable(rows)}\n\n${footer.join('\n')}`,
   }
+}
+
+// ── General enquiries (Contact page) ──────────────────────────────────────
+
+const contactRows = (d: ContactData): [string, string][] => [
+  ['Name', d.name],
+  ['Company', d.company],
+  ['Email', d.email],
+  ['Phone', d.phone],
+  ['Message', d.message],
+]
+
+/** To the general address (Sitemap §7.3) */
+export function contactTeamEmail(d: ContactData, ctx: EnquiryContext) {
+  const rows = contactRows(d)
+  return {
+    subject: headerSafe(`Enquiry ${ctx.reference} · ${d.company}`),
+    html: `<p style="font:14px Arial,sans-serif">New general enquiry from the website.</p>${table(rows)}<hr>${table([['Reference', ctx.reference]])}`,
+    text: `New general enquiry from the website.\n\n${textTable(rows)}\n\nReference: ${ctx.reference}`,
+  }
+}
+
+export function contactAutoReply(d: ContactData, ctx: EnquiryContext) {
+  return customerEmail(
+    `We received your message ${ctx.reference} · Atharva Corrugations`,
+    [`Thank you for your message. Your reference is ${ctx.reference}.`, `We reply within ${ctx.replyPromise}.`],
+    contactRows(d),
+    ctx,
+  )
 }

@@ -75,7 +75,7 @@ const values = <T extends readonly { value: string }[]>(opts: T) =>
 const NO_HTML = /<\s*[a-z!/?]/i
 
 /** Trimmed text with a length range; rejects markup (Sitemap §7.4) */
-const text = (min: number, max: number, label: string) =>
+export const text = (min: number, max: number, label: string) =>
   z
     .string()
     .trim()
@@ -83,7 +83,7 @@ const text = (min: number, max: number, label: string) =>
     .max(max, `${capitalise(label)} can be at most ${max} characters`)
     .refine((v) => !NO_HTML.test(v), 'Please remove the < and > characters')
 
-const optionalText = (max: number, label: string) =>
+export const optionalText = (max: number, label: string) =>
   z
     .string()
     .trim()
@@ -206,6 +206,18 @@ export function makeRfqSchema({ boardValues, industries }: RfqSchemaOptions) {
 
 export type RfqInput = z.input<ReturnType<typeof makeRfqSchema>>
 export type RfqData = z.output<ReturnType<typeof makeRfqSchema>>
+
+/** General enquiry from the Contact page (Sitemap §6.8 K2): name, company, email, phone, message */
+export const contactSchema = z.object({
+  name: text(2, 120, 'your name'),
+  company: text(2, 120, 'your company'),
+  email: z.string().trim().max(254).pipe(z.email('Enter a valid email address')),
+  phone: z.string().trim().refine(isValidPhone, 'Enter a 10-digit mobile number, or an international number starting with +'),
+  message: text(10, 2000, 'your message'),
+})
+
+export type ContactInput = z.input<typeof contactSchema>
+export type ContactData = z.output<typeof contactSchema>
 
 /** Fields sent alongside the form data; checked on the server only */
 export const rfqEnvelopeSchema = z.object({

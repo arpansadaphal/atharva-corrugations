@@ -172,10 +172,10 @@ export const claims = {
   }),
   'F-18-copy': claim({
     id: 'F-18-copy',
-    title: 'Format and flute descriptions reviewed by the client',
+    title: 'Technical guidance copy reviewed by the client',
     value: true,
     label: 'VERIFY',
-    note: 'General technical guidance we wrote; ships only after the client technical reviewer signs it off (SD-10)',
+    note: 'Format descriptions, flute guide, industry packaging considerations: general guidance we wrote; ships only after the client technical reviewer signs it off (SD-10)',
   }),
   'F-20': claim({
     id: 'F-20',
@@ -248,6 +248,20 @@ export const claims = {
     verifiedBy: AUDITOR,
     note: 'Which outputs are routine is still to confirm (Q-22) before Custom Packaging C4 lists them',
   }),
+  'F-30-routine': claim({
+    id: 'F-30-routine',
+    title: 'Design outputs routinely given to customers',
+    value: ['Dieline', '3D mock-up', 'Physical sample', 'Test report', 'Packaging recommendation'],
+    label: 'VERIFY',
+    note: 'Which outputs are routine (Q-22); "packaging concept for export" left out (C-01)',
+  }),
+  'F-30-tooling': claim({
+    id: 'F-30-tooling',
+    title: 'Tooling ownership and storage policy',
+    value: '',
+    label: 'MISSING',
+    note: 'Who owns dies and plates, where and how long they are kept (Q-23)',
+  }),
   'F-29': claim({
     id: 'F-29',
     title: 'Processes at the plant',
@@ -314,6 +328,14 @@ export const claims = {
     note: 'A rating, not a certification; show with year once the scorecard arrives (Q-15)',
   }),
 
+  'F-44': claim({
+    id: 'F-44',
+    title: 'Sustainability statements',
+    value: ['Our products are recyclable.', 'We use recycled paper.', 'We can offer lighter constructions that use less material.'],
+    label: 'VERIFY',
+    note: 'General wording only, no percentages (Q-35)',
+  }),
+
   // ── F. Industries ──────────────────────────────────────────────────────
   'F-45': claim({
     id: 'F-45',
@@ -348,6 +370,22 @@ export const claims = {
     verifiedOn: AUDITED,
     verifiedBy: AUDITOR,
     note: 'Automotive not in the four; pharma has no compliance evidence (C-11, Q-25)',
+  }),
+
+  // ── G. History ─────────────────────────────────────────────────────────
+  'F-52-tape': claim({
+    id: 'F-52-tape',
+    title: 'Milestone: in-house BOPP tape',
+    value: { year: 2025, text: 'BOPP tape production started at the plant.' },
+    label: 'VERIFY',
+    note: 'Dated confirmation needed (Q-28)',
+  }),
+  'F-52-expansion': claim({
+    id: 'F-52-expansion',
+    title: 'Milestone: 2026 expansion',
+    value: { year: 2026, text: 'Expansion into angle corners, honeycomb and paper cores.' },
+    label: 'VERIFY',
+    note: 'What the expansion added, and when (Q-28)',
   }),
 
   // ── H. Legal identifiers ───────────────────────────────────────────────

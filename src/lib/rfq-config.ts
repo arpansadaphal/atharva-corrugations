@@ -38,6 +38,12 @@ export function rfqConfig(mode: ClaimsMode = getClaimsMode(), env: Env = process
       from: env.MAIL_FROM ?? 'Atharva Corrugations <onboarding@resend.dev>',
       replyTo: emails?.sales,
     },
+    /** General enquiries (Sitemap §7.3): the general address, archive copy */
+    contactRouting: {
+      to: (env.GENERAL_TO ?? emails?.general ?? '').split(',').filter(Boolean),
+      bcc: (env.ARCHIVE_BCC ?? '').split(',').filter(Boolean),
+      replyTo: emails?.general,
+    },
   }
 }
 

@@ -62,15 +62,16 @@ export default function ProductsPage() {
         </div>
       </section>
 
-      <ComparisonTable />
-
-      <section data-surface="light" className="section-padding bg-paper">
-        <div className="container-site flex flex-col items-start gap-4 border-l-4 border-accent pl-6">
-          <h2 className="text-h3 font-medium text-ink">Not sure which fits?</h2>
-          <p className="measure">Tell us what you are packing and how heavy it is. We will suggest a construction.</p>
-          <Button href={`${quoteHref}?family=help`} variant="outline">
-            Help me choose
-          </Button>
+      <section data-surface="light" className="section-padding bg-paper-50">
+        <div className="container-site flex flex-col gap-12">
+          <ComparisonTable />
+          <div className="flex flex-col items-start gap-4 border-l-4 border-accent pl-6">
+            <h2 className="text-h3 font-medium text-ink">Not sure which fits?</h2>
+            <p className="measure">Tell us what you are packing and how heavy it is. We will suggest a construction.</p>
+            <Button href={`${quoteHref}?family=help`} variant="outline">
+              Help me choose
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -170,9 +171,8 @@ function ComparisonTable() {
   if (columns.length === 0) return null
 
   return (
-    <section data-surface="light" className="section-padding bg-paper-50">
-      <div className="container-site flex flex-col gap-8">
-        <SectionHeader eyebrow="Compare" headline="Families side by side" />
+    <div className="flex flex-col gap-8">
+      <SectionHeader eyebrow="Compare" headline="Families side by side" />
         {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- scroll region must be keyboard reachable (WCAG 2.1.1) */}
         <div className="relative min-w-0 overflow-x-auto" role="region" aria-label="Product families compared" tabIndex={0}>
           <table className="w-full min-w-[40rem] border-collapse text-left text-spec">
@@ -206,8 +206,7 @@ function ComparisonTable() {
               ))}
             </tbody>
           </table>
-        </div>
       </div>
-    </section>
+    </div>
   )
 }

@@ -38,7 +38,7 @@ export default function RequestQuotePage() {
   const waHref = c.whatsappNumber ? whatsappUrl(c.whatsappNumber, contextForPath('/request-quote')) : undefined
 
   return (
-    <section className="section-padding">
+    <section data-surface="light" className="section-padding bg-paper">
       <div className="container-site flex flex-col gap-10">
         <SectionHeader
           headline="Request a quote"

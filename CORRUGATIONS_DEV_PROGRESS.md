@@ -11,8 +11,9 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 | M3 Quote flow | C3 | Done 2026-10-20 (commit fb199b4). Delivery location on standby, optional |
 | G2 design comps | Phase B | **Approved 2026-10-20**: Hero version 1, 58% copy column, components approved |
 | M4 Homepage | C4 + C7 (part) | Done 2026-10-20 (commit 45f2e16) |
-| M5 Products hub and family template | C5 | **Done 2026-10-20, awaiting owner review** |
-| M6–M9 | C6–C8, Phases D–E | Not started |
+| M5 Products hub and family template | C5 | Done 2026-10-20 (commit dee4b09) |
+| M6 Inner pages | C6 | **Done 2026-10-20, awaiting owner review (G5)** |
+| M7–M9 | C8, Phases D–E | Not started |
 
 ## Decisions recorded (2026-10-20)
 
@@ -26,6 +27,43 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 - Claim statuses: CONFLICT → verify, EXTERNAL → restricted. RESTRICTED facts are not stored in the repo.
 - Banned strings: scanned in `src/`, `public/` and `package.json`, with a per-file allow-list. Docs, tests and scripts are not scanned.
 - Claim expiry: judged at build time (`CLAIMS_AS_OF` in `build:launch`, plus `check-claims`), because prerendering may not read the clock.
+
+## 2026-10-20 — M6 Inner pages
+
+- **Industries** (`/industries`): four anchored sector sections, each with:
+  - what we make for it, from the client's mapping (F-27, with "HRSC" stripped, Q-17);
+  - packaging considerations (general guidance, gated on technical review F-18-copy);
+  - packaging families (links follow the MCB) and a quote CTA.
+  Then "Also serving" and the quote band. No compliance wording (e2e search of Roadmap §6 terms).
+- **Custom Packaging** (`/custom-packaging`):
+  - C1 header naming the confirmed inputs;
+  - C2 six steps, each with "you provide / you receive" (no durations);
+  - C3 inputs; C4 outputs (gated F-30-routine, Q-22);
+  - C5 testing (F-38); C6 tooling (F-30-tooling, MISSING: hidden until the policy text exists);
+  - C7 five questions (tooling ownership left out until Q-23; no lead times or MOQ);
+  - C8 quote band to `?type=custom`.
+- **Manufacturing & Quality** (`/manufacturing-and-quality`):
+  - plant overview title block (location, plants, operating since);
+  - capabilities grouped by stage on ink;
+  - process flow built only from confirmed steps;
+  - quality section with the customer-audit statement, certificate and rating cards, and practices;
+  - sustainability statements (F-44, VERIFY), then the quote band.
+  - **No in-house/partner matrix**: your homepage decision carried over, since you did not say otherwise; the table is easy to restore if wanted. No area, capacity or team figures.
+- **About** (`/about`): three paragraphs from confirmed facts; Atharva Group on ink with the Group office; founders (F-09, VERIFY); milestones (2014 confirmed; 2025 and 2026 VERIFY); locations; contact band. No vision, mission or values; no revenue.
+- **Contact** (`/contact`):
+  - four routes (quote, WhatsApp, call, email);
+  - a general enquiry form (`/api/contact`, reference prefix **ACG**, routed to the general address with the archive BCC, plus auto-reply);
+  - reply times, phones, emails, plant with map link, Group office;
+  - careers line. The form is offline in production until the privacy policy exists (F-66).
+- Shared: `PageHeader`, `screenEnvelope` (both forms share the abuse checks), `readJson`, `zodResolver`, `customerEmail`.
+- **Rhythm fixes across M5/M6** (found by checking the rule on every page, not just home): the products hub merged "Not sure" into the comparison section; the family page's construction section moved to ink; Manufacturing & Quality folded the certificates into the quality section; the Custom Packaging process went to ink. A new e2e test checks the rhythm on every page.
+- Fixed:
+  - the empty tooling heading;
+  - "cad files" lower-casing;
+  - colour-only inline links on Contact (now underlined, WCAG 1.4.1);
+  - the quote page had no surface tag.
+- New claims: F-30-routine, F-30-tooling, F-44, F-52-tape, F-52-expansion; F-18-copy now covers all general technical guidance.
+- Tests: 80 unit, 158 e2e.
 
 ## 2026-10-20 — M5 Products hub and family template
 

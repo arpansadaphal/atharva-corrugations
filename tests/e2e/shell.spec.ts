@@ -2,7 +2,20 @@ import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
 const WIDTHS = [360, 390, 768, 1024, 1280, 1440]
-const PAGES = ['/', '/products', '/products/corrugated-boxes', '/specimen', '/specimen/home', '/request-quote', '/no-such-page']
+const PAGES = [
+  '/',
+  '/products',
+  '/products/corrugated-boxes',
+  '/industries',
+  '/custom-packaging',
+  '/manufacturing-and-quality',
+  '/about',
+  '/contact',
+  '/specimen',
+  '/specimen/home',
+  '/request-quote',
+  '/no-such-page',
+]
 
 test.describe('layout', () => {
   for (const path of PAGES) {

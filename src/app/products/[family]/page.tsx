@@ -120,35 +120,35 @@ export default async function FamilyPage({ params }: PageProps<'/products/[famil
       </section>
 
       {/* F3 Construction and board; F4 Printing and finishing */}
-      <section data-surface="light" className="section-padding bg-paper-50">
+      <section data-surface="dark" className="surface-dark surface-texture section-padding">
         <div className="container-site grid gap-12 lg:grid-cols-2">
           <div className="flex flex-col gap-6">
-            <SectionHeader eyebrow="Construction" headline="Board and construction" />
-            <SpecTable specs={ev.specs} caption={`${f.name}: construction and board`} />
+            <SectionHeader eyebrow="Construction" headline="Board and construction" theme="dark" />
+            <SpecTable specs={ev.specs} caption={`${f.name}: construction and board`} theme="dark" />
             <Gated claim="F-21">
               <Gated claim="F-18-copy">
-                <details className="max-w-2xl border-y border-line py-3">
-                  <summary className="flex min-h-11 cursor-pointer items-center text-ui font-medium text-ink">
+                <details className="max-w-2xl border-y border-line-dark py-3">
+                  <summary className="flex min-h-11 cursor-pointer items-center text-ui font-medium text-on-dark">
                     Which flute? A plain-language guide
                   </summary>
                   <dl className="flex flex-col gap-3 pt-2 pb-4 text-spec">
                     <div>
-                      <dt className="font-semibold text-ink">A flute</dt>
+                      <dt className="font-semibold text-on-dark">A flute</dt>
                       <dd>The tallest common flute. Most cushioning and good stacking strength.</dd>
                     </div>
                     <div>
-                      <dt className="font-semibold text-ink">B flute</dt>
+                      <dt className="font-semibold text-on-dark">B flute</dt>
                       <dd>Lower and finer. A flatter surface for print and good resistance to crushing.</dd>
                     </div>
                     <div>
-                      <dt className="font-semibold text-ink">C flute</dt>
+                      <dt className="font-semibold text-on-dark">C flute</dt>
                       <dd>Between A and B. A common all-round choice for shipping boxes.</dd>
                     </div>
                     <div>
-                      <dt className="font-semibold text-ink">BC (double wall)</dt>
+                      <dt className="font-semibold text-on-dark">BC (double wall)</dt>
                       <dd>B and C together. More strength for heavier contents and taller stacks.</dd>
                     </div>
-                    <p className="text-muted">General guidance. Tell us what you pack and we will recommend the build.</p>
+                    <p className="text-on-dark-muted">General guidance. Tell us what you pack and we will recommend the build.</p>
                   </dl>
                 </details>
               </Gated>
@@ -156,8 +156,8 @@ export default async function FamilyPage({ params }: PageProps<'/products/[famil
           </div>
           {showPrinting && (
             <div className="flex flex-col gap-6">
-              <SectionHeader eyebrow="Printing" headline="Printing and finishing" />
-              <ul className="flex flex-col gap-2">
+              <SectionHeader eyebrow="Printing" headline="Printing and finishing" theme="dark" />
+              <ul className="flex flex-col gap-2 text-on-dark-body">
                 {processes.value.printing.map((p) => (
                   <li key={p}>{p}</li>
                 ))}

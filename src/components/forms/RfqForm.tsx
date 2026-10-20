@@ -3,7 +3,7 @@
 import { ChevronDown, LoaderCircle, Plus, X } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useForm, useWatch, type FieldErrors, type Resolver } from 'react-hook-form'
+import { useForm, useWatch, type FieldErrors } from 'react-hook-form'
 import { Button } from '@/components/ui/Button'
 import { track, readUtm } from '@/lib/analytics'
 import { summaryRows } from '@/lib/email'
@@ -23,6 +23,7 @@ import {
 import { cn } from '@/lib/utils'
 import { whatsappUrl } from '@/lib/whatsapp'
 import { Choice, ErrorText, Field, controlClass, fieldId } from './fields'
+import { flatErrors, zodResolver } from './zod-resolver'
 
 export interface RfqFormProps {
   boardOptions: { value: string; label: string }[]
@@ -48,34 +49,6 @@ const TIMEOUT_MS = 15_000
 /** Wall-clock reads kept out of render (they only run in effects and handlers) */
 const clock = () => Date.now()
 
-/** zod → react-hook-form resolver: nested error paths become nested errors */
-function zodResolver(schema: ReturnType<typeof makeRfqSchema>): Resolver<RfqInput, unknown, RfqData> {
-  return async (values) => {
-    const result = await schema.safeParseAsync(values)
-    if (result.success) return { values: result.data, errors: {} }
-    const errors: Record<string, unknown> = {}
-    for (const issue of result.error.issues) {
-      let node = errors
-      issue.path.forEach((key, i) => {
-        const k = String(key)
-        if (i === issue.path.length - 1) node[k] ??= { type: issue.code, message: issue.message }
-        else node = (node[k] ??= {}) as Record<string, unknown>
-      })
-    }
-    return { values: {}, errors: errors as FieldErrors<RfqInput> }
-  }
-}
-
-/** Flatten nested errors into [path, message] pairs for the summary */
-function flatErrors(errors: FieldErrors, prefix = ''): [string, string][] {
-  return Object.entries(errors).flatMap(([key, value]) => {
-    const path = prefix ? `${prefix}.${key}` : key
-    if (!value || typeof value !== 'object') return []
-    if ('message' in value && typeof value.message === 'string') return [[path, value.message] as [string, string]]
-    return flatErrors(value as FieldErrors, path)
-  })
-}
-
 const SPEC_FIELDS = ['lengthMm', 'widthMm', 'heightMm', 'board', 'printing', 'specialNeeds', 'deliveryLocation']
 
 /**
@@ -96,7 +69,7 @@ export function RfqForm(props: RfqFormProps) {
     setError,
     formState: { errors },
   } = useForm<RfqInput, unknown, RfqData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver<RfqInput, RfqData>(schema),
     defaultValues: {
       enquiryType: 'quote',
       family: '' as RfqInput['family'],
