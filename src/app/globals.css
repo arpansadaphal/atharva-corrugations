@@ -1,0 +1,194 @@
+@import 'tailwindcss';
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Design tokens — CORRUGATIONS_DESIGN_DIRECTION.md §5.2
+   Raw values live here once. scripts/contrast.mjs reads this block and
+   asserts the §5.3 pairs, so keep one `--name: #rrggbb;` declaration per line.
+   Re-theming for the client's logo (D-01) means changing the three accent
+   tokens only.
+───────────────────────────────────────────────────────────────────────────── */
+:root {
+  --ink-900: #0f172a;
+  --ink-800: #1e293b;
+  --paper-0: #ffffff;
+  --paper-50: #f8fafc;
+  --text-body: #475569;
+  --text-muted: #64748b;
+  --on-dark-strong: #ffffff;
+  --on-dark-body: #cbd5e1;
+  --on-dark-muted: #94a3b8;
+  --line: #e2e8f0;
+  --line-ui: #64748b;
+  --line-dark: #334155;
+  --accent: #2563eb; /* provisional — replaced from the logo (D-01) */
+  --accent-hover: #1d4ed8;
+  --accent-on-dark: #60a5fa;
+  --kraft-200: #e7d5b3;
+  --kraft-300: #d4b98a;
+  --kraft-400: #be9b66;
+  --kraft-600: #8a6a3c;
+  --wa: #25d366;
+  --on-wa: #0f172a;
+  --error: #b91c1c;
+  --success: #15803d;
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Tokens only: the default Tailwind palette and breakpoints are removed so a
+   hard-coded colour fails to compile instead of slipping through review. */
+@theme inline {
+  --color-*: initial;
+  --color-ink: var(--ink-900);
+  --color-ink-800: var(--ink-800);
+  --color-paper: var(--paper-0);
+  --color-paper-50: var(--paper-50);
+  --color-body: var(--text-body);
+  --color-muted: var(--text-muted);
+  --color-on-dark: var(--on-dark-strong);
+  --color-on-dark-body: var(--on-dark-body);
+  --color-on-dark-muted: var(--on-dark-muted);
+  --color-line: var(--line);
+  --color-line-ui: var(--line-ui);
+  --color-line-dark: var(--line-dark);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-on-dark: var(--accent-on-dark);
+  --color-kraft-200: var(--kraft-200);
+  --color-kraft-300: var(--kraft-300);
+  --color-kraft-400: var(--kraft-400);
+  --color-kraft-600: var(--kraft-600);
+  --color-wa: var(--wa);
+  --color-on-wa: var(--on-wa);
+  --color-error: var(--error);
+  --color-success: var(--success);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Shared breakpoints (Design §12): mobile 0–767, tablet 768–1023,
+     desktop 1024+, large 1440+ */
+  --breakpoint-*: initial;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 90rem;
+
+  /* Type roles (Design §6) */
+  --text-display: 4rem;
+  --text-display--line-height: 4.5rem;
+  --text-display-sm: 2.5rem;
+  --text-display-sm--line-height: 2.875rem;
+  --text-h2: 2.5rem;
+  --text-h2--line-height: 3rem;
+  --text-h2-sm: 1.875rem;
+  --text-h2-sm--line-height: 2.375rem;
+  --text-h3: 1.5rem;
+  --text-h3--line-height: 2rem;
+  --text-lead: 1.125rem;
+  --text-lead--line-height: 1.875rem;
+  --text-copy: 1rem;
+  --text-copy--line-height: 1.75rem;
+  --text-spec: 0.875rem;
+  --text-spec--line-height: 1.5rem;
+  --text-value: 1.25rem;
+  --text-value--line-height: 1.75rem;
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1rem;
+  --text-label--letter-spacing: 0.1em;
+  --text-ui: 0.9375rem;
+  --text-ui--line-height: 1.5rem;
+
+  --ease-brand: var(--ease-out-expo);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-paper font-sans text-copy text-body;
+  }
+
+  /* Focus ring: 2 px accent, 2 px offset on light; white on ink (Design §14) */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .surface-dark :focus-visible {
+    outline-color: var(--on-dark-strong);
+  }
+}
+
+@layer utilities {
+  /* 1280 container with a 16 px mobile gutter */
+  .container-site {
+    @apply mx-auto w-full max-w-[1280px] px-4 md:px-8;
+  }
+
+  /* 12-column grid shared across the Group sites */
+  .grid-site {
+    @apply grid grid-cols-4 gap-x-4 md:grid-cols-12 md:gap-x-6;
+  }
+
+  /* Section rhythm 72 / 96 / 120 */
+  .section-padding {
+    @apply py-[72px] md:py-24 lg:py-[120px];
+  }
+
+  /* Body copy line length ≤ 68 characters */
+  .measure {
+    max-width: 68ch;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Dark atmospheric surface. The noise overlay arrives with the shell (M2)
+     after the paint-cost test (Technical §8); the footer never gets it. */
+  .surface-dark {
+    @apply bg-ink text-on-dark-body;
+  }
+}
+
+/* Crease Mark (Design §7.1): 12 px cut + two 4 px crease dashes, 2 px tall,
+   28 px wide, drawn left to right in 250 ms once. */
+@keyframes crease-draw {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.crease-mark {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 28px;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    currentColor 0 12px,
+    transparent 12px 16px,
+    currentColor 16px 20px,
+    transparent 20px 24px,
+    currentColor 24px 28px
+  );
+  animation: crease-draw 250ms var(--ease-out-expo) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
