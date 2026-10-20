@@ -8,11 +8,12 @@ import { FLOATING_TOKEN, contextForPath, whatsappUrl } from '@/lib/whatsapp'
  * Floating WhatsApp control (Sitemap §3): bottom right, safe-area aware, ink
  * glyph on green (D-05). Rendered last in the body so it sits late in the
  * tab order. The message names the page; the token marks it as the
- * floating control. Pages with a submit button near the bottom (the quote
- * form) reserve space for it with `pb-24` on mobile.
+ * floating control. Hidden on the quote page so it can never cover the
+ * submit button (Sitemap §3); that page has its own WhatsApp links.
  */
 export function FloatingWhatsApp({ number }: { number: string }) {
   const pathname = usePathname()
+  if (pathname === '/request-quote') return null
   const { subject } = contextForPath(pathname)
   const href = whatsappUrl(number, { token: FLOATING_TOKEN, subject })
 

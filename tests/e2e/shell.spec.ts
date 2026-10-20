@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
 const WIDTHS = [360, 390, 768, 1024, 1280, 1440]
-const PAGES = ['/', '/specimen', '/no-such-page']
+const PAGES = ['/', '/specimen', '/request-quote', '/no-such-page']
 
 test.describe('layout', () => {
   for (const path of PAGES) {
@@ -146,4 +146,15 @@ test.describe('floating WhatsApp and 404', () => {
       await expect(page.locator('main').getByRole('link', { name })).toBeVisible()
     }
   })
+})
+
+test.describe('header at desktop widths', () => {
+  for (const width of [1280, 1440]) {
+    test(`quote button stays on one line at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 })
+      await page.goto('/')
+      const box = await page.locator('header').getByRole('link', { name: 'Request a quote' }).boundingBox()
+      expect(box!.height).toBeLessThanOrEqual(52)
+    })
+  }
 })

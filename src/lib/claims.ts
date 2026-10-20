@@ -23,21 +23,28 @@ export function statusOf(c: Pick<Claim<unknown>, 'label'>): ClaimStatus {
 /**
  * LAUNCH=true is production (claims gate active). Otherwise `next dev` is
  * development and any other build is preview/staging.
+ *
+ * LAUNCH and CLAIMS_AS_OF are inlined at build time (next.config `env`), so
+ * prerendered pages and request-time route handlers always agree. That only
+ * works for literal `process.env.X` reads, hence no destructuring here.
  */
-export function getClaimsMode(env: NodeJS.ProcessEnv = process.env): ClaimsMode {
-  if (env.LAUNCH === 'true') return 'production'
-  if (env.NODE_ENV === 'development') return 'development'
+export function getClaimsMode(env?: Record<string, string | undefined>): ClaimsMode {
+  const launch = env ? env.LAUNCH : process.env.LAUNCH
+  const nodeEnv = env ? env.NODE_ENV : process.env.NODE_ENV
+  if (launch === 'true') return 'production'
+  if (nodeEnv === 'development') return 'development'
   return 'preview'
 }
 
 /**
- * The date expiry is judged against while rendering. Pages are prerendered,
- * and prerendering may not read the clock, so the launch build passes the
- * build date in CLAIMS_AS_OF (see `build:launch`). check-claims also fails
- * on expired claims before every production build.
+ * The date expiry is judged against while rendering. Prerendering may not
+ * read the clock, so the launch build passes its date in CLAIMS_AS_OF (see
+ * `build:launch`). check-claims also fails on expired claims before every
+ * production build.
  */
-function renderDate(env: NodeJS.ProcessEnv = process.env): Date | undefined {
-  return env.CLAIMS_AS_OF ? new Date(env.CLAIMS_AS_OF) : undefined
+function renderDate(): Date | undefined {
+  const asOf = process.env.CLAIMS_AS_OF
+  return asOf ? new Date(asOf) : undefined
 }
 
 /** A claim past its expiry date stops being confirmed. */

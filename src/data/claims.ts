@@ -223,6 +223,31 @@ export const claims = {
     note: 'A rating, not a certification; show with year once the scorecard arrives (Q-15)',
   }),
 
+  // ── F. Industries ──────────────────────────────────────────────────────
+  'F-45': claim({
+    id: 'F-45',
+    title: 'Industries served',
+    value: [
+      'Automotive and auto components',
+      'FMCG',
+      'Food and beverage',
+      'Pharma and healthcare',
+      'E-commerce and retail',
+      'Electrical and electronics',
+      'Industrial and engineering',
+      'Agriculture and produce',
+      'Appliances',
+      'Textiles',
+      'Chemicals',
+      'Export packaging',
+    ],
+    label: 'CONFIRMED',
+    evidence: `${S1} §7`,
+    verifiedOn: AUDITED,
+    verifiedBy: AUDITOR,
+    note: 'Export packaging is a product type, never an export claim (C-01)',
+  }),
+
   // ── H. Legal identifiers ───────────────────────────────────────────────
   'F-64': claim({
     id: 'F-64',
@@ -237,6 +262,13 @@ export const claims = {
     value: 'U74900PN2013PTC146924',
     label: 'VERIFY',
     note: 'Footer after reconfirmation (Q-10)',
+  }),
+  'F-66': claim({
+    id: 'F-66',
+    title: 'Privacy policy published',
+    value: '/privacy-policy',
+    label: 'MISSING',
+    note: 'Client policy not received (Q-09). Forms stay offline in production until it is published',
   }),
 } satisfies Record<string, Claim<unknown>>
 

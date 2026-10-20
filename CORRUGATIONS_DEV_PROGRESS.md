@@ -7,8 +7,8 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 | Milestone | Roadmap stage | Status |
 |---|---|---|
 | M1 Foundation | C1 | Done 2026-10-20 (commit 4e14176) |
-| M2 Shell (navbar, footer, floating WhatsApp, 404) | C2 | **Done 2026-10-20, awaiting owner review** |
-| M3 Quote flow | C3 | Not started (needs F-3 decision: delivery location required?) |
+| M2 Shell (navbar, footer, floating WhatsApp, 404) | C2 | Done 2026-10-20 (commit 229c886) |
+| M3 Quote flow | C3 | **Done 2026-10-20, awaiting owner review** (delivery-location decision still open) |
 | M4 Homepage | C4 + C7 | Blocked on G2 (hero and component comps) |
 | M5–M9 | C5–C8, Phases D–E | Not started |
 
@@ -21,6 +21,27 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 - Claim statuses: CONFLICT → verify, EXTERNAL → restricted. RESTRICTED facts are not stored in the repo.
 - Banned strings: scanned in `src/`, `public/` and `package.json`, with a per-file allow-list. Docs, tests and scripts are not scanned.
 - Claim expiry: judged at build time (`CLAIMS_AS_OF` in `build:launch`, plus `check-claims`), because prerendering may not read the clock.
+
+## 2026-10-20 — M3 Quote flow
+
+- `/request-quote` (Sitemap §6.9): form 7/12 plus sidebar 5/12 (what we need, internal-dimensions illustration I-12, drawings by WhatsApp or email reply, phone and hours). On mobile, a "What we need" disclosure sits above the form and the sidebar follows it; the specification group collapses and reopens itself if it has errors.
+- Fields and rules per Sitemap §7.2 / Technical §7.2, one zod schema shared by browser and server (`src/lib/rfq-schema.ts`). Board options and industries are resolved through the claims gate, so production offers only "Not sure" until ply data is verified, and the server rejects any option the page did not show.
+- **Delivery location: optional for now** (`DELIVERY_LOCATION_REQUIRED` in rfq-schema.ts, one line to flip). Strategy §5.4 says optional, Sitemap §7.2 required; owner undecided.
+- **Provisional limits** (the docs give none): dimensions 10–5000 mm, quantity ≤ 10,000,000, weight ≤ 100,000 kg. All three dimensions or none, unless "I will send a drawing or sample instead" is ticked.
+- `?type=custom` (Sitemap §7.1) maps to a Quote marked "(from Custom Packaging)", because §7.2's radio has only Quote / Product / Sample.
+- States per Sitemap §7.5: error summary that takes focus and links to fields; inline errors via aria-describedby; "Sending…" with inputs disabled; success replaces the form with reference, summary and a WhatsApp link carrying the reference; error keeps every input and offers WhatsApp and phone; 15 s timeout.
+- `POST /api/rfq` (`src/lib/rfq-handler.ts`): JSON only, 32 KB cap, honeypot, ≥ 3 s fill time, Turnstile hook (off until the widget is built), the same schema, reference `ACQ-YYMMDD-XXXX` (India date, Crockford base-32). Team email goes to sales@, cc the named contact, bcc the archive, Reply-To the customer; then the auto-reply (Reply-To sales@). A failed team email returns 502 (error state); a failed auto-reply does not lose the lead. Logs carry the reference only.
+- Email over Resend's HTTP API (no SDK). Without a key, preview and dev log the send; production refuses. Values HTML-escaped, CR/LF stripped from headers.
+- **Forms stay offline in production** until the privacy policy is published (claim F-66, MISSING, Q-09): the page shows WhatsApp and email instead, and the API answers 503.
+- The privacy notice beside the submit button is a **draft for counsel** (Q-09: retention period and privacy contact unknown, so neither is stated).
+- Floating WhatsApp hidden on `/request-quote`, so it can never cover the submit button.
+- New claims: F-45 (industries, CONFIRMED), F-58 (floating WhatsApp, VERIFY), F-66 (privacy policy, MISSING).
+- **Fix:** LAUNCH and CLAIMS_AS_OF are now inlined at build time (next.config `env`). Before this, a launch build served without LAUNCH at runtime had its API running in preview mode while the pages were in production mode.
+- Buttons no longer wrap; the header quote button wrapped at 1440 px.
+- Banned-string allow-list: one entry, the "header-injection" security comment in `src/lib/email.ts` (the false positive predicted in audit F-5).
+- `useFieldArray` dropped: its random row IDs are not allowed while Cache Components prerenders. Quantity rows are tracked by count.
+- Tests: 59 unit, 54 e2e (validation and focus, real end-to-end success through the API, forced failure, speed rejection, 15 s timeout, prefill, quantity rows, mobile collapse, keyboard submit, axe on every state).
+- Next 16 with Cache Components does not accept `runtime` or `preferredRegion` route exports, so the Mumbai region (Technical §7.3) goes in hosting config (M8).
 
 ## 2026-10-20 — M2 Shell
 
@@ -54,3 +75,7 @@ Keep this file under 200 lines (Roadmap Phase C). Newest entry first.
 - Noise texture needs the real mid-range Android paint test (Technical §8).
 - Product dropdown drawings (Design §13) wait for the illustration set (C7).
 - No favicon until the logo arrives (Q-06).
+- Turnstile widget not built; `verifyTurnstile` is wired server-side but inactive while the keys are empty.
+- UTM capture on landing (Technical §10) comes with analytics (M7); the form already reads UTM from its URL and session storage.
+- The internal-dimensions illustration needs the client's technical reviewer (SD-10).
+- No rate limiting yet: Technical §7.6 puts it in the platform firewall (M8).

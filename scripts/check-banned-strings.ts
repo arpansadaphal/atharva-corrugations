@@ -16,7 +16,13 @@ const ROOT = new URL('..', import.meta.url).pathname
 const TEXT_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.mjs', '.css', '.json', '.md', '.svg', '.txt', '.xml', '.html'])
 
 /** { file (repo-relative), term, reason } — every entry needs a reason. */
-const ALLOW: { file: string; term: string; reason: string }[] = []
+const ALLOW: { file: string; term: string; reason: string }[] = [
+  {
+    file: 'src/lib/email.ts',
+    term: 'injection',
+    reason: 'Security comment on header-injection protection (Technical §7.4); not business copy',
+  },
+]
 
 function walk(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {

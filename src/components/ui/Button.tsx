@@ -24,7 +24,7 @@ const variantMap: Record<ButtonVariant, string> = {
 }
 
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-lg text-ui font-semibold transition-colors duration-150 ease-brand disabled:cursor-not-allowed disabled:opacity-60'
+  'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg text-ui font-semibold transition-colors duration-150 ease-brand disabled:cursor-not-allowed disabled:opacity-60'
 
 interface CommonProps {
   variant?: ButtonVariant
